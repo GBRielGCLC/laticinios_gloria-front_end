@@ -1,4 +1,4 @@
-import { Card, CardContent, Box, Typography, Grid } from '@mui/material';
+import { Card, CardContent, Box, Typography, Grid, useTheme } from '@mui/material';
 import {
     Inventory,
     AttachMoney,
@@ -14,6 +14,8 @@ interface DashboardProps {
 }
 
 export function Dashboard({ products }: DashboardProps) {
+    const theme = useTheme();
+
     const totalProducts = products.length;
 
     const getFinalPrice = (product: Product) => {
@@ -72,42 +74,42 @@ export function Dashboard({ products }: DashboardProps) {
             value: totalProducts,
             description: "Produtos ativos no estoque",
             icon: Inventory,
-            color: '#2d4a34',
+            color: theme.palette.primary.main,
         },
         {
             title: "Valor do Estoque",
             value: `R$ ${totalInventoryValue.toFixed(2)}`,
             description: "Valor atual em estoque",
             icon: AttachMoney,
-            color: '#e5b55d',
+            color: theme.palette.secondary.main,
         },
         {
             title: "Receita Total",
             value: `R$ ${totalRevenue.toFixed(2)}`,
             description: `${totalSold} unidades vendidas`,
             icon: TrendingUp,
-            color: '#2d4a34',
+            color: theme.palette.primary.main,
         },
         {
             title: "Lucro Total",
             value: `R$ ${totalProfit.toFixed(2)}`,
             description: "Lucro com vendas realizadas",
             icon: AttachMoney,
-            color: '#d4a04c',
+            color: theme.palette.secondary.main,
         },
         {
             title: "Alertas de Estoque",
             value: lowStockProducts + outOfStockProducts,
             description: `${lowStockProducts} baixo, ${outOfStockProducts} sem estoque`,
             icon: Warning,
-            color: '#d97706',
+            color: theme.palette.warning.main,
         },
         {
             title: "Alertas de Validade",
             value: expiryAlerts.expiring + expiryAlerts.expired,
             description: `${expiryAlerts.expiring} vencendo, ${expiryAlerts.expired} vencidos`,
             icon: CalendarToday,
-            color: '#b91c1c',
+            color: theme.palette.error.dark,
         },
     ];
 
@@ -116,7 +118,7 @@ export function Dashboard({ products }: DashboardProps) {
             {stats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
-                    <Grid size={{xs: 12, sm: 6, md: 4,}} key={index}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4, }} key={index}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
