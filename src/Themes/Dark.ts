@@ -4,24 +4,24 @@ export const DarkTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#2d4a34',      // mantém o verde original
-            light: '#3d5a44',
+            main: '#386843ff',
+            light: '#519160ff',
             dark: '#1f3326',
             contrastText: '#e6d5bc',
         },
         secondary: {
-            main: '#e5b55d',      // mantém o dourado original
+            main: '#e5b55d',
             light: '#eac680',
             dark: '#d4a04c',
             contrastText: '#1f3326',
         },
         background: {
-            default: '#121412',   // fundo principal escuro neutro
-            paper: '#1b1e1b',     // cartões e containers
+            default: '#100f09',
+            paper: '#1b1e1b',
         },
         text: {
-            primary: '#f5f3ed',   // texto principal claro
-            secondary: '#cfc8b8', // texto secundário levemente amarelado
+            primary: '#f5f3ed',
+            secondary: '#cfc8b8',
         },
         divider: '#2f3330',
         error: {
@@ -51,7 +51,7 @@ export const DarkTheme = createTheme({
         MuiAppBar: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#2d4a34', // mantém a cor do tema claro
+                    backgroundColor: '#2d4a34',
                     color: '#e6d5bc',
                 },
             },
@@ -90,7 +90,7 @@ export const DarkTheme = createTheme({
         MuiTabs: {
             styleOverrides: {
                 indicator: {
-                    backgroundColor: '#e5b55d', // dourado no indicador
+                    backgroundColor: '#e5b55d',
                 },
             },
         },
