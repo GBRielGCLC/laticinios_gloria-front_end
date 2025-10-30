@@ -24,18 +24,6 @@ export const DarkTheme = createTheme({
             secondary: '#cfc8b8',
         },
         divider: '#2f3330',
-        error: {
-            main: '#ef4444',
-        },
-        warning: {
-            main: '#f59e0b',
-        },
-        success: {
-            main: '#4ade80',
-        },
-        info: {
-            main: '#60a5fa',
-        },
     },
     typography: {
         fontFamily: 'system-ui, -apple-system, sans-serif',

@@ -22,18 +22,6 @@ export const LightTheme = createTheme({
             primary: '#1f3326',
             secondary: '#5a6b5d',
         },
-        error: {
-            main: '#b91c1c',
-        },
-        warning: {
-            main: '#d97706',
-        },
-        success: {
-            main: '#2d4a34',
-        },
-        info: {
-            main: '#3b82f6',
-        },
     },
     typography: {
         fontFamily: 'system-ui, -apple-system, sans-serif',
