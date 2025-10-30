@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  PersonalizedToast,
+} from './Components';
+import 'react-toastify/dist/ReactToastify.css';
+import { AppThemeProvider } from "./Contexts";
+import { PaginaTeste } from './PaginaTeste';
 
-function App() {
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import "dayjs/locale/pt-br";
+
+export default function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <LocalizationProvider
+      dateAdapter={AdapterDayjs}
+      adapterLocale='pt-br'
+    >
+      <AppThemeProvider>
+        <PersonalizedToast />
+
+        <PaginaTeste />
+      </AppThemeProvider>
+    </LocalizationProvider>
   );
 }
-
-export default App;
