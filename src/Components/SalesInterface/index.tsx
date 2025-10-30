@@ -72,7 +72,7 @@ export function SalesInterface({ products, onSale }: SalesInterfaceProps) {
     const availableProducts = products.filter(p => p.quantity > 0);
 
     return (
-        <Card>
+        <Card sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', maxWidth: 500 }}>
             <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <ShoppingCart color="primary" />

@@ -224,7 +224,11 @@ export const PaginaTeste = () => {
                                 </Typography>
                             </Box>
 
-                            <Box sx={{ maxWidth: 500 }}>
+                            <Box sx={{
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}>
                                 <SalesInterface products={products} onSale={handleSale} />
                             </Box>
                         </Box>
