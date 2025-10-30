@@ -112,7 +112,7 @@ export function SalesInterface({ products, onSale }: SalesInterfaceProps) {
                         </FormControl>
 
                         {selectedProduct && (
-                            <Paper sx={{ p: 2, bgcolor: 'grey.100' }}>
+                            <Paper sx={{ p: 2 }}>
                                 <Typography variant="body2">Disponível: {selectedProduct.quantity} unidades</Typography>
                                 {selectedProduct.discount > 0 ? (
                                     <Box>
