@@ -1,6 +1,6 @@
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 
-import { Add, Storefront, LightMode, DarkMode } from '@mui/icons-material';
+import { Storefront, LightMode, DarkMode } from '@mui/icons-material';
 import { useAppThemeContext } from "../../Contexts";
 
 export const MenuBar = ({ children }: { children: React.ReactNode }) => {

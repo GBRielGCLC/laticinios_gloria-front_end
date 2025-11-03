@@ -36,8 +36,6 @@ function TabPanel(props: TabPanelProps) {
 
 export const Home = () => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [tabValue, setTabValue] = useState(0);
 
     const handleSale = (productId: string, quantity: number) => {

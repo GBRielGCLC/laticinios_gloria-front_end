@@ -8,7 +8,7 @@ import {
   Button,
 } from '@mui/material';
 import { DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 export interface Product {
   id: string;
