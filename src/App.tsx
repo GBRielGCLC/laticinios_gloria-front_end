@@ -8,6 +8,7 @@ import { Home } from './Pages';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import "dayjs/locale/pt-br";
+import { MenuBar } from './Components/MenuBar';
 
 export default function App() {
 
@@ -19,9 +20,9 @@ export default function App() {
       <AppThemeProvider>
         <PersonalizedToast />
 
-        {/* <MenuBar> */}
+        <MenuBar>
           <Home />
-        {/* </MenuBar> */}
+        </MenuBar>
 
       </AppThemeProvider>
     </LocalizationProvider>
