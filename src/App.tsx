@@ -3,11 +3,12 @@ import {
 } from './Components';
 import 'react-toastify/dist/ReactToastify.css';
 import { AppThemeProvider } from "./Contexts";
-import { PaginaTeste } from './PaginaTeste';
+import { Home } from './Pages';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import "dayjs/locale/pt-br";
+import { MenuBar } from './Components/MenuBar';
 
 export default function App() {
 
@@ -19,7 +20,10 @@ export default function App() {
       <AppThemeProvider>
         <PersonalizedToast />
 
-        <PaginaTeste />
+        {/* <MenuBar> */}
+          <Home />
+        {/* </MenuBar> */}
+
       </AppThemeProvider>
     </LocalizationProvider>
   );

@@ -6,7 +6,7 @@ import {
     Warning,
     CalendarToday
 } from '@mui/icons-material';
-import { Product } from '../ProductForm';
+import { Product } from '../../Components/ProductForm';
 import dayjs from 'dayjs';
 
 interface DashboardProps {
