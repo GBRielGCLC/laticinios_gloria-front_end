@@ -1,10 +1,4 @@
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     Paper,
     IconButton,
     Chip,
@@ -22,6 +16,8 @@ import { useState } from "react";
 import { toast } from 'react-toastify';
 import { Product } from '../ProductForm';
 import dayjs, { Dayjs } from 'dayjs';
+import { PersonalizedDataGrid } from '../PersonalizedDataGrid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
 interface InventoryTableProps {
     products: Product[];
@@ -49,7 +45,7 @@ export function InventoryTable({ products, onEdit, onDelete, onDiscard, onApplyD
         }
 
         const today = dayjs();
-        const expiry = expiryDate;
+        const expiry = dayjs(expiryDate);
         const daysUntilExpiry = expiry.diff(today, 'day');
 
         if (daysUntilExpiry < 0) {
@@ -101,123 +97,183 @@ export function InventoryTable({ products, onEdit, onDelete, onDiscard, onApplyD
         }
     };
 
+    const columns: GridColDef<Product>[] = [
+        {
+            field: 'name',
+            headerName: 'Produto',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            minWidth: 180,
+            renderCell: (params: GridRenderCellParams) => (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {params.value}
+                    {params.row.discount > 0 && (
+                        <Chip label={`-${params.row.discount}%`} size="small" color="secondary" />
+                    )}
+                </Box>
+            ),
+        },
+        {
+            field: 'costPrice',
+            headerName: 'Custo',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 100,
+            valueFormatter: (value: number) => `R$ ${value.toFixed(2)}`,
+        },
+        {
+            field: 'profitMargin',
+            headerName: 'Lucro',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 80,
+            valueFormatter: (value) => `${value}%`,
+        },
+        {
+            field: 'salePrice',
+            headerName: 'Preço',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 120,
+            renderCell: (params: GridRenderCellParams) => {
+                const finalPrice = getFinalPrice(params.row); // Chama a função auxiliar
+                return params.row.discount > 0 ? (
+                    <Box>
+                        <Typography variant="body2" sx={{ textDecoration: 'line-through', color: 'text.secondary', fontSize: '0.875rem' }}>
+                            R$ {params.row.salePrice.toFixed(2)}
+                        </Typography>
+                        <Typography>R$ {finalPrice.toFixed(2)}</Typography>
+                    </Box>
+                ) : (
+                    <Typography>R$ {params.row.salePrice.toFixed(2)}</Typography>
+                );
+            },
+        },
+        {
+            field: 'quantity',
+            headerName: 'Estoque',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 90,
+            type: 'number'
+        },
+        {
+            field: 'stockStatus',
+            headerName: 'Status',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 100,
+            sortable: false,
+            filterable: false,
+            valueGetter: (value, row) => getStockStatus(row.quantity).label, // Usado para ordenação/filtragem
+            renderCell: (params: GridRenderCellParams) => {
+                const status = getStockStatus(params.row.quantity);
+                return <Chip label={status.label} size="small" color={status.color} />;
+            },
+        },
+        {
+            field: 'expiryDate',
+            headerName: 'Validade',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            minWidth: 150,
+            type: 'date',
+            valueFormatter: (value) => dayjs(value).toDate(), // Transforma a string em Date para ordenação
+            renderCell: (params: GridRenderCellParams) => {
+                const expiryStatus = getExpiryStatus(params.value);
+                return (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                        <Chip label={expiryStatus.label} size="small" color={expiryStatus.color} />
+                        <Typography variant="caption" color="text.secondary">
+                            {dayjs(params.value).locale('pt-br').format('L')}
+                        </Typography>
+                        {expiryStatus.days >= 0 && expiryStatus.days <= 30 && (
+                            <Typography variant="caption" color="text.secondary">
+                                {expiryStatus.days} {expiryStatus.days === 1 ? 'dia' : 'dias'}
+                            </Typography>
+                        )}
+                    </Box>
+                );
+            },
+        },
+        {
+            field: 'soldQuantity',
+            headerName: 'Vendidos',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 90,
+            type: 'number',
+            valueGetter: (value, row) => getSoldQuantity(row),
+        },
+        {
+            field: 'actions',
+            headerName: 'Ações',
+            align: 'center',
+            headerAlign: 'center',
+            flex: 1,
+            width: 120,
+            sortable: false,
+            filterable: false,
+            renderCell: (params: GridRenderCellParams) => {
+                const expiryStatus = getExpiryStatus(params.row.expiryDate);
+                const product = params.row;
+
+                return (
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
+                        {(expiryStatus.days <= 30 && expiryStatus.days >= 0) && (
+                            <IconButton
+                                size="small"
+                                onClick={() => handleDiscountClick(product)}
+                                title="Aplicar desconto"
+                                color="secondary"
+                            >
+                                <Percent fontSize="small" />
+                            </IconButton>
+                        )}
+                        {expiryStatus.days < 0 && (
+                            <IconButton
+                                size="small"
+                                onClick={() => handleDiscard(product)}
+                                title="Descartar produto"
+                                color="error"
+                            >
+                                <Warning fontSize="small" />
+                            </IconButton>
+                        )}
+                        <IconButton
+                            size="small"
+                            onClick={() => onEdit(product)}
+                            color="primary"
+                        >
+                            <Edit fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                            size="small"
+                            onClick={() => onDelete(product.id)}
+                            color="error"
+                        >
+                            <Delete fontSize="small" />
+                        </IconButton>
+                    </Box>
+                );
+            },
+        },
+    ];
+
     return (
         <>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Produto</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Custo</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Lucro</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Preço</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Estoque</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Status</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Validade</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }}>Vendidos</TableCell>
-                            <TableCell sx={{ color: 'primary.contrastText', fontWeight: 600 }} align="right">Ações</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {products.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={9} align="center" sx={{ py: 4, color: 'text.secondary' }}>
-                                    Nenhum produto cadastrado. Clique em "Adicionar Produto" para começar.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            products.map((product) => {
-                                const stockStatus = getStockStatus(product.quantity);
-                                const expiryStatus = getExpiryStatus(product.expiryDate);
-                                const finalPrice = getFinalPrice(product);
-
-                                return (
-                                    <TableRow key={product.id} hover>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                {product.name}
-                                                {product.discount > 0 && (
-                                                    <Chip label={`-${product.discount}%`} size="small" color="secondary" />
-                                                )}
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>R$ {product.costPrice.toFixed(2)}</TableCell>
-                                        <TableCell>{product.profitMargin}%</TableCell>
-                                        <TableCell>
-                                            {product.discount > 0 ? (
-                                                <Box>
-                                                    <Typography variant="body2" sx={{ textDecoration: 'line-through', color: 'text.secondary', fontSize: '0.875rem' }}>
-                                                        R$ {product.salePrice.toFixed(2)}
-                                                    </Typography>
-                                                    <Typography>R$ {finalPrice.toFixed(2)}</Typography>
-                                                </Box>
-                                            ) : (
-                                                <Typography>R$ {product.salePrice.toFixed(2)}</Typography>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>{product.quantity}</TableCell>
-                                        <TableCell>
-                                            <Chip label={stockStatus.label} size="small" color={stockStatus.color} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                                <Chip label={expiryStatus.label} size="small" color={expiryStatus.color} />
-                                                <Typography variant="caption" color="text.secondary">
-                                                    {dayjs(product.expiryDate).locale('pt-br').format('L')}
-                                                </Typography>
-                                                {expiryStatus.days >= 0 && expiryStatus.days <= 30 && (
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {expiryStatus.days} {expiryStatus.days === 1 ? 'dia' : 'dias'}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>{getSoldQuantity(product)}</TableCell>
-                                        <TableCell align="right">
-                                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
-                                                {(expiryStatus.days <= 30 && expiryStatus.days >= 0) && (
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleDiscountClick(product)}
-                                                        title="Aplicar desconto"
-                                                        color="secondary"
-                                                    >
-                                                        <Percent fontSize="small" />
-                                                    </IconButton>
-                                                )}
-                                                {expiryStatus.days < 0 && (
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleDiscard(product)}
-                                                        title="Descartar produto"
-                                                        color="error"
-                                                    >
-                                                        <Warning fontSize="small" />
-                                                    </IconButton>
-                                                )}
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => onEdit(product)}
-                                                    color="primary"
-                                                >
-                                                    <Edit fontSize="small" />
-                                                </IconButton>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => onDelete(product.id)}
-                                                    color="error"
-                                                >
-                                                    <Delete fontSize="small" />
-                                                </IconButton>
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <PersonalizedDataGrid
+                columns={columns}
+                rows={products}
+            />
 
             <Dialog open={discountDialogOpen} onClose={() => setDiscountDialogOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>Aplicar Desconto</DialogTitle>

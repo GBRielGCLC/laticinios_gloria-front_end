@@ -36,6 +36,13 @@ export const DarkTheme = createTheme({
         borderRadius: 10,
     },
     components: {
+        MuiFormLabel: {
+            styleOverrides: {
+                asterisk: {
+                    color: '#d32f2f',
+                },
+            },
+        },
         MuiAppBar: {
             styleOverrides: {
                 root: {
@@ -51,20 +58,6 @@ export const DarkTheme = createTheme({
                     fontWeight: 500,
                     borderRadius: 10,
                 },
-                containedPrimary: {
-                    backgroundColor: '#2d4a34',
-                    color: '#e6d5bc',
-                    '&:hover': {
-                        backgroundColor: '#3d5a44',
-                    },
-                },
-                containedSecondary: {
-                    backgroundColor: '#e5b55d',
-                    color: '#1f3326',
-                    '&:hover': {
-                        backgroundColor: '#eac680',
-                    },
-                },
             },
         },
         MuiCard: {
@@ -75,19 +68,30 @@ export const DarkTheme = createTheme({
                 },
             },
         },
-        MuiTabs: {
-            styleOverrides: {
-                indicator: {
-                    backgroundColor: '#e5b55d',
-                },
-            },
-        },
-        MuiTab: {
+        //O DataGrid não está na tipagem original do mui, por isso o @ts-expect-error
+        //@ts-expect-error
+        MuiDataGrid: {
             styleOverrides: {
                 root: {
-                    color: '#e6d5bc',
-                    '&.Mui-selected': {
-                        color: '#e5b55d',
+                    backgroundColor: '#1c1c1c',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    boxShadow: '0px 4px 6px rgba(255, 255, 255, 0.06)',
+                    borderRadius: 8,
+                },
+                columnHeader: {
+                    background: '#1f3326',
+                    color: '#ffffff',
+                    fontWeight: 'bold',
+                },
+                row: {
+                    '&:nth-of-type(odd)': {
+                        backgroundColor: '#222222',
+                    },
+                    '&:nth-of-type(even)': {
+                        backgroundColor: '#1c1c1c',
+                    },
+                    '&:hover': {
+                        backgroundColor: '#333333',
                     },
                 },
             },

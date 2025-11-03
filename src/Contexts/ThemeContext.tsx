@@ -46,15 +46,6 @@ export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({ children })
 
         return {
             ...themeName === 'light' ? LightTheme : DarkTheme,
-            components: {
-                MuiFormLabel: {
-                    styleOverrides: {
-                        asterisk: {
-                            color: '#d32f2f',
-                        },
-                    },
-                },
-            },
         }
     }, [themeName]);
 

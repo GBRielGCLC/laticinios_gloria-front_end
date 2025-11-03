@@ -11,6 +11,7 @@ import {
 } from '../../Components';
 
 import { Dashboard, Estoque } from "../index";
+import dayjs from "dayjs";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -35,7 +36,17 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const Home = () => {
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<Product[]>([{
+        id: '1',
+        name: 'Leite',
+        quantity: 10,
+        expiryDate: dayjs('2025-12-31'),
+        costPrice: 5,
+        profitMargin: 10,
+        salePrice: 5.5,
+        initialQuantity: 10,
+        discount: 0
+    }]);
     const [tabValue, setTabValue] = useState(0);
 
     const handleSale = (productId: string, quantity: number) => {
