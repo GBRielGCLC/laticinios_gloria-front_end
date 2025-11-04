@@ -14,21 +14,21 @@ import {
 } from '@mui/material';
 import { ShoppingCart } from '@mui/icons-material';
 import { toast } from "react-toastify";
-import { Product } from "../ProductForm";
+import { IProduto } from "../FormProduto";
 import dayjs from "dayjs";
 
-interface SalesInterfaceProps {
-    products: Product[];
+interface VendaProps {
+    products: IProduto[];
     onSale: (productId: string, quantity: number) => void;
 }
 
-export function SalesInterface({ products, onSale }: SalesInterfaceProps) {
+export function Venda({ products, onSale }: VendaProps) {
     const [selectedProductId, setSelectedProductId] = useState<string>("");
     const [saleQuantity, setSaleQuantity] = useState("");
 
     const selectedProduct = products.find(p => p.id === selectedProductId);
 
-    const getFinalPrice = (product: Product) => {
+    const getFinalPrice = (product: IProduto) => {
         if (product.discount > 0) {
             return product.salePrice - (product.salePrice * product.discount / 100);
         }

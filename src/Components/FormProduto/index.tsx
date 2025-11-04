@@ -10,7 +10,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 
-export interface Product {
+export interface IProduto {
   id: string;
   name: string;
   costPrice: number;
@@ -22,14 +22,14 @@ export interface Product {
   discount: number;
 }
 
-interface ProductFormProps {
+interface FormProdutoProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (product: Omit<Product, "id"> | Product) => void;
-  editingProduct?: Product | null;
+  onSubmit: (product: Omit<IProduto, "id"> | IProduto) => void;
+  editingProduct?: IProduto | null;
 }
 
-export function ProductForm({ open, onClose, onSubmit, editingProduct }: ProductFormProps) {
+export function FormProduto({ open, onClose, onSubmit, editingProduct }: FormProdutoProps) {
   const [name, setName] = useState("");
   const [costPrice, setCostPrice] = useState("");
   const [profitMargin, setProfitMargin] = useState("30");

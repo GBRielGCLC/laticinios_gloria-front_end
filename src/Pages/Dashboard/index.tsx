@@ -6,11 +6,11 @@ import {
     Warning,
     CalendarToday
 } from '@mui/icons-material';
-import { Product } from '../../Components/ProductForm';
+import { IProduto } from '../../Components/FormProduto';
 import dayjs from 'dayjs';
 
 interface DashboardProps {
-    products: Product[];
+    products: IProduto[];
 }
 
 export function Dashboard({ products }: DashboardProps) {
@@ -18,7 +18,7 @@ export function Dashboard({ products }: DashboardProps) {
 
     const totalProducts = products.length;
 
-    const getFinalPrice = (product: Product) => {
+    const getFinalPrice = (product: IProduto) => {
         if (product.discount > 0) {
             return product.salePrice - (product.salePrice * product.discount / 100);
         }

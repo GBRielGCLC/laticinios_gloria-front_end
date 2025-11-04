@@ -6,8 +6,8 @@ import {
     Tab,
 } from '@mui/material';
 import {
-    SalesInterface,
-    Product,
+    IProduto,
+    Venda,
 } from '../../Components';
 
 import { Dashboard, Estoque } from "../index";
@@ -36,7 +36,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const Home = () => {
-    const [products, setProducts] = useState<Product[]>([{
+    const [products, setProducts] = useState<IProduto[]>([{
         id: '1',
         name: 'Leite',
         quantity: 10,
@@ -89,7 +89,7 @@ export const Home = () => {
                         display: 'flex',
                         justifyContent: 'center',
                     }}>
-                        <SalesInterface products={products} onSale={handleSale} />
+                        <Venda products={products} onSale={handleSale} />
                     </Box>
                 </TabPanel>
             </Container>

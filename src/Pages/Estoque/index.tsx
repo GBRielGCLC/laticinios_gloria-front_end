@@ -1,21 +1,21 @@
-import { Box, Button, Typography } from "@mui/material"
-import { InventoryTable, Product, ProductForm } from "../../Components"
+import { Box, Button, Typography, useTheme } from "@mui/material"
+import { InventoryTable, IProduto, FormProduto } from "../../Components"
 import { Add } from "@mui/icons-material"
 import { useState } from "react";
 
 interface IEstoque {
-    produtos: Product[];
-    setProdutos: (produtos: Product[]) => void
+    produtos: IProduto[];
+    setProdutos: (produtos: IProduto[]) => void
 }
 export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [editingProduct, setEditingProduct] = useState<IProduto | null>(null);
 
-    const handleAddProduct = (productData: Omit<Product, "id"> | Product) => {
+    const handleAddProduct = (productData: Omit<IProduto, "id"> | IProduto) => {
         if ("id" in productData) {
             setProdutos(produtos.map(p => p.id === productData.id ? productData : p));
         } else {
-            const newProduct: Product = {
+            const newProduct: IProduto = {
                 ...productData,
                 id: Date.now().toString(),
             };
@@ -24,7 +24,7 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
         setEditingProduct(null);
     };
 
-    const handleEditProduct = (product: Product) => {
+    const handleEditProduct = (product: IProduto) => {
         setEditingProduct(product);
         setIsFormOpen(true);
     };
@@ -55,11 +55,13 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
         setIsFormOpen(false);
         setEditingProduct(null);
     };
+
+    const theme = useTheme();
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Box>
-                    <Typography variant="h5">Controle de Estoque</Typography>
+                    <Typography variant="h5" color={theme.palette.primary.contrastText}>Controle de Estoque</Typography>
                     <Typography variant="body2" color="text.secondary">
                         Gerencie produtos, preços, margens de lucro e validades
                     </Typography>
@@ -82,7 +84,7 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
                 onApplyDiscount={handleApplyDiscount}
             />
 
-            <ProductForm
+            <FormProduto
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 onSubmit={handleAddProduct}

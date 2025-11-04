@@ -14,14 +14,14 @@ import {
 import { Edit, Delete, Warning, Percent } from '@mui/icons-material';
 import { useState } from "react";
 import { toast } from 'react-toastify';
-import { Product } from '../ProductForm';
+import { IProduto } from '../FormProduto';
 import dayjs, { Dayjs } from 'dayjs';
 import { PersonalizedDataGrid } from '../PersonalizedDataGrid';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
 interface InventoryTableProps {
-    products: Product[];
-    onEdit: (product: Product) => void;
+    products: IProduto[];
+    onEdit: (product: IProduto) => void;
     onDelete: (id: string) => void;
     onDiscard: (id: string) => void;
     onApplyDiscount: (id: string, discount: number) => void;
@@ -29,7 +29,7 @@ interface InventoryTableProps {
 
 export function InventoryTable({ products, onEdit, onDelete, onDiscard, onApplyDiscount }: InventoryTableProps) {
     const [discountDialogOpen, setDiscountDialogOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<IProduto | null>(null);
     const [discountValue, setDiscountValue] = useState("");
 
     const getStockStatus = (quantity: number) => {
@@ -58,18 +58,18 @@ export function InventoryTable({ products, onEdit, onDelete, onDiscard, onApplyD
         return { label: "Válido", color: "success" as const, days: daysUntilExpiry };
     };
 
-    const getSoldQuantity = (product: Product) => {
+    const getSoldQuantity = (product: IProduto) => {
         return product.initialQuantity - product.quantity;
     };
 
-    const getFinalPrice = (product: Product) => {
+    const getFinalPrice = (product: IProduto) => {
         if (product.discount > 0) {
             return product.salePrice - (product.salePrice * product.discount / 100);
         }
         return product.salePrice;
     };
 
-    const handleDiscountClick = (product: Product) => {
+    const handleDiscountClick = (product: IProduto) => {
         setSelectedProduct(product);
         setDiscountValue(product.discount.toString());
         setDiscountDialogOpen(true);
@@ -90,14 +90,14 @@ export function InventoryTable({ products, onEdit, onDelete, onDiscard, onApplyD
         }
     };
 
-    const handleDiscard = (product: Product) => {
+    const handleDiscard = (product: IProduto) => {
         if (window.confirm(`Tem certeza que deseja descartar ${product.name}?`)) {
             onDiscard(product.id);
             toast.success(`${product.name} foi descartado do estoque`);
         }
     };
 
-    const columns: GridColDef<Product>[] = [
+    const columns: GridColDef<IProduto>[] = [
         {
             field: 'name',
             headerName: 'Produto',
