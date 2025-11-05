@@ -14,10 +14,10 @@ import {
 import { Edit, Delete, Warning, Percent } from '@mui/icons-material';
 import { useState } from "react";
 import { toast } from 'react-toastify';
-import { IProduto } from '../FormProduto';
 import dayjs, { Dayjs } from 'dayjs';
-import { PersonalizedDataGrid } from '../PersonalizedDataGrid';
+import { PersonalizedDataGrid } from '../../../Components/PersonalizedDataGrid';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { IProduto } from '../../../Services/Api/Produto';
 
 interface InventoryTableProps {
     products: IProduto[];

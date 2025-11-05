@@ -14,8 +14,8 @@ import {
 } from '@mui/material';
 import { ShoppingCart } from '@mui/icons-material';
 import { toast } from "react-toastify";
-import { IProduto } from "../FormProduto";
 import dayjs from "dayjs";
+import { IProduto } from "../../Services/Api/Produto";
 
 interface VendaProps {
     products: IProduto[];

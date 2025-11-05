@@ -1,7 +1,9 @@
 import { Box, Button, Typography, useTheme } from "@mui/material"
-import { InventoryTable, IProduto, FormProduto } from "../../Components"
 import { Add } from "@mui/icons-material"
 import { useState } from "react";
+import { InventoryTable } from "./InventoryTable";
+import { FormProduto } from "./FormProduto";
+import { IProduto } from "../../Services/Api/Produto";
 
 interface IEstoque {
     produtos: IProduto[];

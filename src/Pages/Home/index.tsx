@@ -6,12 +6,12 @@ import {
     Tab,
 } from '@mui/material';
 import {
-    IProduto,
     Venda,
 } from '../../Components';
 
 import { Dashboard, Estoque } from "../index";
 import dayjs from "dayjs";
+import { IProduto } from "../../Services/Api/Produto";
 
 interface TabPanelProps {
     children?: React.ReactNode;
