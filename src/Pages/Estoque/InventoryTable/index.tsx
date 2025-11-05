@@ -188,12 +188,20 @@ export function InventoryTable({ products, onEdit, onDelete, onDiscard, onApplyD
             valueFormatter: (value) => dayjs(value).toDate(), // Transforma a string em Date para ordenação
             renderCell: (params: GridRenderCellParams) => {
                 const expiryStatus = getExpiryStatus(params.value);
+
                 return (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.5,
+                        padding: 0.7,
+                    }}>
                         <Chip label={expiryStatus.label} size="small" color={expiryStatus.color} />
+
                         <Typography variant="caption" color="text.secondary">
                             {dayjs(params.value).locale('pt-br').format('L')}
                         </Typography>
+
                         {expiryStatus.days >= 0 && expiryStatus.days <= 30 && (
                             <Typography variant="caption" color="text.secondary">
                                 {expiryStatus.days} {expiryStatus.days === 1 ? 'dia' : 'dias'}
