@@ -19,57 +19,12 @@ import { IProduto } from "../../Services/Api/Produto";
 
 interface VendaProps {
     products: IProduto[];
-    onSale: (productId: string, quantity: number) => void;
+    onSale?: (productId: string, quantity: number) => void;
 }
 
 export function Venda({ products, onSale }: VendaProps) {
     const [selectedProductId, setSelectedProductId] = useState<string>("");
     const [saleQuantity, setSaleQuantity] = useState("");
-
-    const selectedProduct = products.find(p => p.id === selectedProductId);
-
-    const getFinalPrice = (product: IProduto) => {
-        if (product.discount > 0) {
-            return product.salePrice - (product.salePrice * product.discount / 100);
-        }
-        return product.salePrice;
-    };
-
-    const handleSale = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!selectedProductId || !saleQuantity) {
-            toast.error("Selecione um produto e insira a quantidade");
-            return;
-        }
-
-        const quantity = parseInt(saleQuantity);
-
-        if (!selectedProduct) {
-            toast.error("Produto não encontrado");
-            return;
-        }
-
-        if (quantity > selectedProduct.quantity) {
-            toast.error(`Apenas ${selectedProduct.quantity} unidades disponíveis`);
-            return;
-        }
-
-        if (quantity <= 0) {
-            toast.error("Quantidade deve ser maior que 0");
-            return;
-        }
-
-        onSale(selectedProductId, quantity);
-        const finalPrice = getFinalPrice(selectedProduct);
-        const totalPrice = (quantity * finalPrice).toFixed(2);
-        toast.success(`Venda registrada: ${quantity} x ${selectedProduct.name} - R$ ${totalPrice}`);
-
-        setSaleQuantity("");
-        setSelectedProductId("");
-    };
-
-    const availableProducts = products.filter(p => p.quantity > 0);
 
     return (
         <Card sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', maxWidth: 500 }}>
@@ -84,9 +39,9 @@ export function Venda({ products, onSale }: VendaProps) {
                     </Box>
                 </Box>
 
-                <form onSubmit={handleSale}>
+                <form /* onSubmit={handleSale} */>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <FormControl fullWidth>
+                        {/* <FormControl fullWidth>
                             <InputLabel id="product-label">Produto</InputLabel>
                             <Select
                                 labelId="product-label"
@@ -102,16 +57,16 @@ export function Venda({ products, onSale }: VendaProps) {
                                         const finalPrice = getFinalPrice(product);
                                         return (
                                             <MenuItem key={product.id} value={product.id}>
-                                                {product.name} - R$ {finalPrice.toFixed(2)} ({product.quantity} disponíveis)
-                                                {product.discount > 0 && ` - ${product.discount}% OFF`}
+                                                {product.nome} - R$ {product.precoUnitario.toFixed(2)} {/* ({product.quantity} disponíveis)
+                                                {/* product.discount > 0 && ` - ${product.discount}% OFF` 
                                             </MenuItem>
                                         );
                                     })
                                 )}
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
 
-                        {selectedProduct && (
+                        {/* selectedProduct && (
                             <Paper sx={{ p: 2 }}>
                                 <Typography variant="body2">Disponível: {selectedProduct.quantity} unidades</Typography>
                                 {selectedProduct.discount > 0 ? (
@@ -131,12 +86,12 @@ export function Venda({ products, onSale }: VendaProps) {
                                     Validade: {dayjs(selectedProduct.expiryDate).locale('pt-br').format('DD/MM/YYYY')}
                                 </Typography>
                             </Paper>
-                        )}
+                        ) */}
 
                         <TextField
                             label="Quantidade"
                             type="number"
-                            inputProps={{ min: 1, max: selectedProduct?.quantity || 1 }}
+                            // inputProps={{ min: 1, max: selectedProduct?.quantity || 1 }}
                             value={saleQuantity}
                             onChange={(e) => setSaleQuantity(e.target.value)}
                             placeholder="Digite a quantidade"
@@ -144,7 +99,7 @@ export function Venda({ products, onSale }: VendaProps) {
                             fullWidth
                         />
 
-                        {selectedProduct && saleQuantity && parseInt(saleQuantity) > 0 && (
+                        {/* selectedProduct && saleQuantity && parseInt(saleQuantity) > 0 && (
                             <Paper sx={{ p: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
                                 <Typography variant="body2">
                                     Total: R$ {(parseInt(saleQuantity) * getFinalPrice(selectedProduct)).toFixed(2)}
@@ -153,7 +108,7 @@ export function Venda({ products, onSale }: VendaProps) {
                                     Lucro estimado: R$ {(parseInt(saleQuantity) * (getFinalPrice(selectedProduct) - selectedProduct.costPrice)).toFixed(2)}
                                 </Typography>
                             </Paper>
-                        )}
+                        ) */}
 
                         <Button
                             type="submit"

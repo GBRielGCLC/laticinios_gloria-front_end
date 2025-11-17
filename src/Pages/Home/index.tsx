@@ -12,6 +12,7 @@ import {
 import { Dashboard, Estoque } from "../index";
 import dayjs from "dayjs";
 import { IProduto } from "../../Services/Api/Produto";
+import { useHome } from "./useHome";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -36,30 +37,13 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const Home = () => {
-    const [products, setProducts] = useState<IProduto[]>([{
-        id: '1',
-        name: 'Leite',
-        quantity: 10,
-        expiryDate: dayjs('2025-12-31'),
-        costPrice: 5,
-        profitMargin: 10,
-        salePrice: 5.5,
-        initialQuantity: 10,
-        discount: 0
-    }]);
     const [tabValue, setTabValue] = useState(0);
 
-    const handleSale = (productId: string, quantity: number) => {
-        setProducts(products.map(product => {
-            if (product.id === productId) {
-                return {
-                    ...product,
-                    quantity: product.quantity - quantity,
-                };
-            }
-            return product;
-        }));
-    };
+    const {
+        produtos,
+        isLoading,
+        listAllProducts
+    } = useHome();
 
     return (
         <Box sx={{ bgcolor: 'background.default' }}>
@@ -73,13 +57,14 @@ export const Home = () => {
                 </Box>
 
                 <TabPanel value={tabValue} index={0}>
-                    <Dashboard products={products} />
+                    <Dashboard products={produtos.dados} />
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={1}>
                     <Estoque
-                        produtos={products}
-                        setProdutos={setProducts}
+                        produtos={produtos.dados}
+                        isLoadingTable={isLoading}
+                        refreshTable={listAllProducts}
                     />
                 </TabPanel>
 
@@ -89,7 +74,7 @@ export const Home = () => {
                         display: 'flex',
                         justifyContent: 'center',
                     }}>
-                        <Venda products={products} onSale={handleSale} />
+                        <Venda products={produtos.dados} />
                     </Box>
                 </TabPanel>
             </Container>

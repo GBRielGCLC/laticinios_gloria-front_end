@@ -7,15 +7,22 @@ import { IProduto } from "../../Services/Api/Produto";
 
 interface IEstoque {
     produtos: IProduto[];
-    setProdutos: (produtos: IProduto[]) => void
+    isLoadingTable?: boolean;
+    refreshTable?: () => void
+    // setProdutos: (produtos: IProduto[]) => void
 }
-export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
+export const Estoque = ({
+    produtos,
+    isLoadingTable = false,
+    refreshTable
+}: IEstoque) => {
+    const theme = useTheme();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<IProduto | null>(null);
 
-    const handleAddProduct = (productData: Omit<IProduto, "id"> | IProduto) => {
+    /* const handleAddProduct = (productData: Omit<IProduto, "id"> | IProduto) => {
         if ("id" in productData) {
-            setProdutos(produtos.map(p => p.id === productData.id ? productData : p));
+            setProdutos(produtosHome.map(p => p.id === productData.id ? productData : p));
         } else {
             const newProduct: IProduto = {
                 ...productData,
@@ -26,23 +33,18 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
         setEditingProduct(null);
     };
 
-    const handleEditProduct = (product: IProduto) => {
-        setEditingProduct(product);
-        setIsFormOpen(true);
-    };
-
     const handleDeleteProduct = (id: string) => {
         if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-            setProdutos(produtos.filter(p => p.id !== id));
+            setProdutos(produtosHome.filter(p => p.id !== id));
         }
     };
 
     const handleDiscard = (id: string) => {
-        setProdutos(produtos.filter(p => p.id !== id));
+        setProdutos(produtosHome.filter(p => p.id !== id));
     };
 
     const handleApplyDiscount = (id: string, discount: number) => {
-        setProdutos(produtos.map(product => {
+        setProdutos(produtosHome.map(product => {
             if (product.id === id) {
                 return {
                     ...product,
@@ -51,6 +53,11 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
             }
             return product;
         }));
+    }; */
+
+    const handleEditProduct = (produto: IProduto) => {
+        setEditingProduct(produto);
+        setIsFormOpen(true);
     };
 
     const handleCloseForm = () => {
@@ -58,7 +65,6 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
         setEditingProduct(null);
     };
 
-    const theme = useTheme();
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -80,17 +86,14 @@ export const Estoque = ({ produtos, setProdutos }: IEstoque) => {
 
             <InventoryTable
                 products={produtos}
-                onEdit={handleEditProduct}
-                onDelete={handleDeleteProduct}
-                onDiscard={handleDiscard}
-                onApplyDiscount={handleApplyDiscount}
+                onClickEdit={handleEditProduct}
             />
 
             <FormProduto
                 open={isFormOpen}
                 onClose={handleCloseForm}
-                onSubmit={handleAddProduct}
                 editingProduct={editingProduct}
+                refreshTable={refreshTable}
             />
         </Box>
     )
