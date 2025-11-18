@@ -2,7 +2,7 @@ import {
   PersonalizedToast,
 } from './Components';
 import 'react-toastify/dist/ReactToastify.css';
-import { AppThemeProvider } from "./Contexts";
+import { AppThemeProvider, ConfirmDialogProvider } from "./Contexts";
 import { Home } from './Pages';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -18,12 +18,14 @@ export default function App() {
       adapterLocale='pt-br'
     >
       <AppThemeProvider>
-        <PersonalizedToast />
+        <ConfirmDialogProvider>
+          <PersonalizedToast />
 
-        <MenuBar>
-          <Home />
-        </MenuBar>
+          <MenuBar>
+            <Home />
+          </MenuBar>
 
+        </ConfirmDialogProvider>
       </AppThemeProvider>
     </LocalizationProvider>
   );
