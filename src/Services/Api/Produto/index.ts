@@ -14,7 +14,7 @@ export interface IProdutoPOST extends Omit<IProduto, "id"> { }
 const ENTIDADE_API = "Produto";
 
 export type IProdutoGET = BaseApiResponse<IProduto>
-const listarProdutos = async(): Promise<IProdutoGET | Error> => {
+const listarProdutos = async (): Promise<IProdutoGET | Error> => {
   try {
     const { data } = await Api.get(ENTIDADE_API);
 
@@ -40,8 +40,17 @@ const editarProduto = async (id: any, produto: IProdutoPOST) => {
   }
 };
 
+const excluirProduto = async (id: any): Promise<void | Error> => {
+  try {
+    await Api.delete(`${ENTIDADE_API}/${id}`);
+  } catch (error: any) {
+    return error;
+  }
+};
+
 export const ProdutoService = {
   listarProdutos,
   cadastrarProduto,
-  editarProduto
+  editarProduto,
+  excluirProduto,
 }

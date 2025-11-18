@@ -1,9 +1,9 @@
 import { Box, Button, Typography, useTheme } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import { useState } from "react";
 import { InventoryTable } from "./Tabela";
 import { FormProduto } from "./FormProduto";
 import { IProduto } from "../../Services/Api/Produto";
+import { useProduto } from "./useProduto";
 
 interface IEstoque {
     produtos: IProduto[];
@@ -13,57 +13,18 @@ interface IEstoque {
 }
 export const Estoque = ({
     produtos,
-    isLoadingTable = false,
     refreshTable
 }: IEstoque) => {
     const theme = useTheme();
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<IProduto | null>(null);
+    const {
+        isFormOpen,
+        setIsFormOpen,
 
-    /* const handleAddProduct = (productData: Omit<IProduto, "id"> | IProduto) => {
-        if ("id" in productData) {
-            setProdutos(produtosHome.map(p => p.id === productData.id ? productData : p));
-        } else {
-            const newProduct: IProduto = {
-                ...productData,
-                id: Date.now().toString(),
-            };
-            setProdutos([...produtos, newProduct]);
-        }
-        setEditingProduct(null);
-    };
+        editingProduct,
 
-    const handleDeleteProduct = (id: string) => {
-        if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-            setProdutos(produtosHome.filter(p => p.id !== id));
-        }
-    };
-
-    const handleDiscard = (id: string) => {
-        setProdutos(produtosHome.filter(p => p.id !== id));
-    };
-
-    const handleApplyDiscount = (id: string, discount: number) => {
-        setProdutos(produtosHome.map(product => {
-            if (product.id === id) {
-                return {
-                    ...product,
-                    discount: discount,
-                };
-            }
-            return product;
-        }));
-    }; */
-
-    const handleEditProduct = (produto: IProduto) => {
-        setEditingProduct(produto);
-        setIsFormOpen(true);
-    };
-
-    const handleCloseForm = () => {
-        setIsFormOpen(false);
-        setEditingProduct(null);
-    };
+        handleEditProduct,
+        handleCloseForm,
+    } = useProduto();
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -87,6 +48,7 @@ export const Estoque = ({
             <InventoryTable
                 products={produtos}
                 onClickEdit={handleEditProduct}
+                refreshTable={refreshTable}
             />
 
             <FormProduto

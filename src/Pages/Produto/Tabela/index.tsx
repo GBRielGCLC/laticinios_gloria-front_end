@@ -17,19 +17,25 @@ import { useState } from "react";
 import dayjs, { Dayjs } from 'dayjs';
 import { PersonalizedDataGrid } from '../../../Components/PersonalizedDataGrid';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { IProduto } from '../../../Services/Api/Produto';
+import { IProduto, ProdutoService } from '../../../Services/Api/Produto';
+import { useConfirm } from '../../../Contexts';
+import { toast } from 'react-toastify';
 
 interface InventoryTableProps {
     products: IProduto[];
     onClickEdit?: (product: IProduto) => void;
     isLoading?: boolean
+    refreshTable?: () => void
 }
 
 export function InventoryTable({
     products,
     onClickEdit,
-    isLoading = false
+    isLoading = false,
+    refreshTable,
 }: InventoryTableProps) {
+    const confirmDialog = useConfirm();
+
     const [discountDialogOpen, setDiscountDialogOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<IProduto | null>(null);
     const [discountValue, setDiscountValue] = useState("");
@@ -53,6 +59,28 @@ export function InventoryTable({
         }
         return { label: "Válido", color: "success" as const, days: daysUntilExpiry };
     };
+
+    interface HandleDeleteProdutoProps{
+        id: any;
+        setLoading: (v: boolean) => void
+        close: () => void;
+    }
+    const handleDeleteProduto = (props: HandleDeleteProdutoProps) => {
+        props.setLoading(true);
+
+        ProdutoService.excluirProduto(props.id).then((result) => {
+            props.setLoading(false);
+
+            if (result instanceof Error) {
+                toast.error(result.message);
+                return;
+            }
+
+            toast.success("Produto excluido com sucesso!");
+            refreshTable?.();
+            props.close();
+        })
+    }
 
     const columns: GridColDef<IProduto>[] = [
         {
@@ -134,7 +162,17 @@ export function InventoryTable({
 
                         <IconButton
                             size="small"
-                            // onClick={() => onDelete(product.id)}
+                            onClick={() => {
+                                confirmDialog({
+                                    titulo: 'Excluir produto',
+                                    conteudo: 'Tem certeza que deseja excluir o produto?',
+                                    onConfirm: async ({ close, setLoading }) => handleDeleteProduto({
+                                        id: product.id,
+                                        setLoading,
+                                        close
+                                    }),
+                                })
+                            }}
                             color="error"
                         >
                             <Delete fontSize="small" />
