@@ -9,9 +9,7 @@ import {
     Venda,
 } from '../../Components';
 
-import { Dashboard, Estoque } from "../index";
-import dayjs from "dayjs";
-import { IProduto } from "../../Services/Api/Produto";
+import { Dashboard, Produto } from "../index";
 import { useHome } from "./useHome";
 
 interface TabPanelProps {
@@ -51,7 +49,7 @@ export const Home = () => {
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                     <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
                         <Tab label="Painel" />
-                        <Tab label="Estoque" />
+                        <Tab label="Produtos" />
                         <Tab label="Vendas" />
                     </Tabs>
                 </Box>
@@ -61,7 +59,7 @@ export const Home = () => {
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={1}>
-                    <Estoque
+                    <Produto
                         produtos={produtos.dados}
                         isLoadingTable={isLoading}
                         refreshTable={listAllProducts}

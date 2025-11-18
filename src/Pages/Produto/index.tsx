@@ -5,16 +5,16 @@ import { FormProduto } from "./FormProduto";
 import { IProduto } from "../../Services/Api/Produto";
 import { useProduto } from "./useProduto";
 
-interface IEstoque {
+interface IProdutoProps {
     produtos: IProduto[];
     isLoadingTable?: boolean;
     refreshTable?: () => void
     // setProdutos: (produtos: IProduto[]) => void
 }
-export const Estoque = ({
+export const Produto = ({
     produtos,
     refreshTable
-}: IEstoque) => {
+}: IProdutoProps) => {
     const theme = useTheme();
     const {
         isFormOpen,
@@ -29,12 +29,8 @@ export const Estoque = ({
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                    <Typography variant="h5" color={theme.palette.primary.contrastText}>Controle de Estoque</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Gerencie produtos, preços, margens de lucro e validades
-                    </Typography>
-                </Box>
+                <Box></Box>
+
                 <Button
                     variant="contained"
                     color="primary"
