@@ -1,7 +1,7 @@
 import { Box, Button, Typography, useTheme } from "@mui/material"
 import { Add } from "@mui/icons-material"
 import { useState } from "react";
-import { InventoryTable } from "./InventoryTable";
+import { InventoryTable } from "./Tabela";
 import { FormProduto } from "./FormProduto";
 import { IProduto } from "../../Services/Api/Produto";
 
