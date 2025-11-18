@@ -44,7 +44,7 @@ export const errorInteceptor = (error: AxiosError) => {
         const messages = Object.values(data.errors).flat();
         return messages.join('\n'); // ou só messages[0] se quiser a primeira apenas
       }
-      if (data.message) return data.message;
+      if (data.error) return data.error;
     }
 
     return defaultMessageByRequestType(error);
