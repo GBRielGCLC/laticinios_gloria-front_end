@@ -11,6 +11,7 @@ import {
 
 import { Dashboard, Produto } from "../index";
 import { useHome } from "./useHome";
+import { Lote } from "../Lote";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -50,6 +51,7 @@ export const Home = () => {
                     <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
                         <Tab label="Painel" />
                         <Tab label="Produtos" />
+                        <Tab label="Lotes" />
                         <Tab label="Vendas" />
                     </Tabs>
                 </Box>
@@ -67,6 +69,14 @@ export const Home = () => {
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={2}>
+                    <Lote
+                        // produtos={produtos.dados}
+                        isLoadingTable={isLoading}
+                        refreshTable={listAllProducts}
+                    />
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={3}>
                     <Box sx={{
                         width: '100%',
                         display: 'flex',
