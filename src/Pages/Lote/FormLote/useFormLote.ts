@@ -5,14 +5,27 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ILote, ILotePOST, LoteService } from "../../../Services/Api/Lote";
 import { isForInStatement } from "typescript";
 import { toast } from "react-toastify";
+import dayjs, { Dayjs } from "dayjs";
 
 const validationSchema = yup.object().shape({
     numeroLote: yup.string().required(),
     quantidade: yup.number().min(1, "A quantidade deve ser maior que zero").required(),
     valorLoteCompra: yup.number().min(0, "O valor da compra deve ser maior ou igual a zero").required(),
-    dataCompra: yup.string().required(),
-    dataValidade: yup.string().required(),
+
+    dataCompra: yup.mixed<Dayjs>()
+        .required()
+        .nullable()
+        .test('is-dayjs', 'Data de compra inválida.', (value) => dayjs.isDayjs(value)),
+    dataValidade: yup.mixed<Dayjs>()
+        .required()
+        .nullable()
+        .test('is-dayjs', 'Data de validade inválida.', (value) => dayjs.isDayjs(value))
 });
+
+interface IFormLote extends Omit<ILotePOST, "dataCompra" | "dataValidade"> {
+    dataCompra: Dayjs | null;
+    dataValidade: Dayjs | null;
+}
 
 interface UseFormLoteProps {
     open: boolean;
@@ -36,16 +49,15 @@ export function useFormLote({
         register,
         handleSubmit: hookFormSubmit,
         formState: { errors },
-        watch,
         reset,
-    } = useForm<ILotePOST>({
+    } = useForm<IFormLote>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             numeroLote: "",
             quantidade: undefined,
             valorLoteCompra: undefined,
-            dataCompra: "",
-            dataValidade: "",
+            dataCompra: null,
+            dataValidade: null,
         },
     });
 
@@ -56,8 +68,8 @@ export function useFormLote({
                     numeroLote: editingProduct.numeroLote,
                     quantidade: editingProduct.quantidade,
                     valorLoteCompra: editingProduct.valorLoteCompra,
-                    dataCompra: editingProduct.dataCompra,
-                    dataValidade: editingProduct.dataValidade,
+                    dataCompra: dayjs(editingProduct.dataCompra),
+                    dataValidade: dayjs(editingProduct.dataValidade),
                 });
             } else {
                 reset();
@@ -65,14 +77,21 @@ export function useFormLote({
         }
     }, [editingProduct, open, reset]);
 
-    const onSubmitHandler: SubmitHandler<ILotePOST> = (data) => {
+    const onSubmitHandler: SubmitHandler<IFormLote> = (data) => {
         setIsLoading(true);
 
+        const dataToSubmit: ILotePOST = {
+            ...data,
+
+            dataCompra: data.dataCompra?.format("YYYY-MM-DD") ?? "",
+            dataValidade: data.dataValidade?.format("YYYY-MM-DD") ?? "",
+        };
+
         if (editingProduct) {
-            LoteService.editarLote(editingProduct.numeroLote, data).then((result) => {
+            LoteService.editarLote(editingProduct.numeroLote, dataToSubmit).then((result) => {
                 setIsLoading(false);
 
-                if(result instanceof Error) {
+                if (result instanceof Error) {
                     toast.error(result.message);
                     return;
                 }
@@ -81,14 +100,15 @@ export function useFormLote({
                 onClose();
             });
         } else {
-            LoteService.cadastrarLote(data).then((result) => {
+            LoteService.cadastrarLote(dataToSubmit).then((result) => {
                 setIsLoading(false);
 
-                if(result instanceof Error) {
+                if (result instanceof Error) {
                     toast.error(result.message);
                     return;
                 }
 
+                toast.success("Lote cadastrado com sucesso!");
                 reset();
                 refreshTable?.();
             });

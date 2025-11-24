@@ -88,8 +88,7 @@ export function InventoryTable({
             headerName: 'Produto',
             align: 'center',
             headerAlign: 'center',
-            flex: 1,
-            minWidth: 180,
+            flex: 2,
             renderCell: (params: GridRenderCellParams) => (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {params.value}
@@ -112,7 +111,6 @@ export function InventoryTable({
             align: 'center',
             headerAlign: 'center',
             flex: 1,
-            width: 100,
             valueFormatter: (value: number) => `R$ ${value.toFixed(2)}`,
         },
         {
@@ -121,7 +119,6 @@ export function InventoryTable({
             align: 'center',
             headerAlign: 'center',
             flex: 1,
-            width: 120,
             sortable: false,
             filterable: false,
             renderCell: (params: GridRenderCellParams) => {

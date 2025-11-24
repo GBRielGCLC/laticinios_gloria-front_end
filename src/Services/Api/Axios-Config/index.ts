@@ -1,13 +1,6 @@
 import axios from 'axios';
 import { responseInterceptor, errorInteceptor } from './Interceptors';
 // import { reportProgress } from './progressManager';
-
-export interface BaseApiResponse<T> {
-    dados: T[],
-    totalRegistros: number,
-    totalPaginas: number,
-}
-
 const Api = axios.create({
     baseURL: process.env.NODE_ENV === 'production' ?
     '' : 'http://localhost:5122/api/v1',

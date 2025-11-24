@@ -11,7 +11,7 @@ const localeText: DataGridProps['localeText'] = {
     paginationDisplayedRows: ({ from, to, count }) => `${from} - ${to} de ${count}`,
 };
 
-const paginationModel = { page: 0, pageSize: 10 };
+const paginationModel = { page: 1, pageSize: 10 };
 
 export const PersonalizedDataGrid = (props: DataGridProps, title?: string) => {
     return (

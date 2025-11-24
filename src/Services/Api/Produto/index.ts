@@ -1,5 +1,5 @@
-import { Dayjs } from "dayjs";
-import { Api, BaseApiResponse } from "../Axios-Config";
+import { Api } from "../Axios-Config";
+import { BaseApiResponse } from "../Utils";
 
 export interface IProduto {
   id: number;

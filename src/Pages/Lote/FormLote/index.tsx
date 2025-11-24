@@ -6,10 +6,13 @@ import {
   TextField,
   Button,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import { ILote } from "../../../Services/Api/Lote";
 
 import { useFormLote } from "./useFormLote";
+import { Controller } from "react-hook-form";
+import { DatePicker } from "@mui/x-date-pickers";
 
 interface FormLoteProps {
   open: boolean;
@@ -37,38 +40,79 @@ export function FormLote(props: FormLoteProps) {
 
       <form onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 2 }}>
-          {/* <TextField
+          <TextField
             label="Nome do Lote"
             fullWidth
             required
-            {...register("nome")}
-            error={!!errors.nome}
-            helperText={errors.nome?.message}
+            {...register("numeroLote")}
+            error={!!errors.numeroLote}
+            helperText={errors.numeroLote?.message}
             disabled={isLoading}
           />
 
           <TextField
-            label="Descrição"
+            label="Quantidade"
             fullWidth
             required
-            {...register("descricao")}
-            error={!!errors.descricao}
-            helperText={errors.descricao?.message}
+            {...register("quantidade")}
+            error={!!errors.quantidade}
+            helperText={errors.quantidade?.message}
             disabled={isLoading}
           />
 
           <TextField
-            label="Preço Unitário"
-            type="number"
-            inputProps={{ step: 0.01, min: 0 }}
-            placeholder="0.00"
+            label="Valor da Compra"
             fullWidth
             required
-            {...register("precoUnitario", { valueAsNumber: true })}
-            error={!!errors.precoUnitario}
-            helperText={errors.precoUnitario?.message}
+            {...register("valorLoteCompra")}
+            error={!!errors.valorLoteCompra}
+            helperText={errors.valorLoteCompra?.message}
             disabled={isLoading}
-          /> */}
+          />
+
+          <Stack direction="row" spacing={2}>
+            <Controller
+              name="dataCompra"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label={"Data da Compra"}
+                  value={field.value}
+                  onChange={field.onChange}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                      error: !!errors.dataCompra,
+                      helperText: errors.dataCompra?.message
+                    }
+                  }}
+                />
+              )}
+            />
+
+            <Controller
+              name="dataValidade"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label={"Data da Compra"}
+                  value={field.value}
+                  onChange={field.onChange}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                      error: !!errors.dataValidade,
+                      helperText: errors.dataValidade?.message
+                    }
+                  }}
+                />
+              )}
+            />
+          </Stack>
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>

@@ -1,6 +1,8 @@
-import { Api, BaseApiResponse } from "../Axios-Config";
+import { Api } from "../Axios-Config";
+import { BaseApiResponse } from "../Utils";
 
 export interface ILote {
+    id: any;
     numeroLote: string;
     quantidade: number;
     valorLoteCompra: number;

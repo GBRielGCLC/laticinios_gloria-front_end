@@ -1,21 +1,26 @@
 import { Box, Button, Typography, useTheme } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import { InventoryTable } from "./Tabela";
 import { FormLote } from "./FormLote";
 import { ILote } from "../../Services/Api/Lote";
 import { useLote } from "./useLote";
+import { PersonalizedDataGrid } from "../../Components";
+import { useEffect } from "react";
 
 interface ILoteProps {
-    lotes: ILote[];
+    // lotes: ILote[];
     isLoadingTable?: boolean;
     refreshTable?: () => void
 }
 export const Lote = ({
-    lotes,
+    // lotes,
     refreshTable
 }: ILoteProps) => {
-    const theme = useTheme();
     const {
+        getLotes,
+        lotes,
+        isLoadingLote,
+        columns,
+
         isFormOpen,
         setIsFormOpen,
 
@@ -40,11 +45,12 @@ export const Lote = ({
                 </Button>
             </Box>
 
-            {/* <InventoryTable
-                products={produtos}
-                onClickEdit={handleEditProduct}
-                refreshTable={refreshTable}
-            /> */}
+            <PersonalizedDataGrid
+                rows={lotes.dados}
+                columns={columns}
+                loading={isLoadingLote}
+            />
+
 
             <FormLote
                 open={isFormOpen}
