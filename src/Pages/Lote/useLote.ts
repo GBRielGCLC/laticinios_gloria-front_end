@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ILote, ILoteGET, LoteService } from "../../Services/Api/Lote";
 import { toast } from "react-toastify";
 import { ProdutoService } from "../../Services/Api/Produto";
@@ -120,7 +120,7 @@ export const useLote = () => {
         },
     ];
 
-    const getLotes = () => {
+    const listAllLotes = useCallback(() => {
         setIsLoadingLote(true);
 
         LoteService.listarLotes().then((result) => {
@@ -133,19 +133,13 @@ export const useLote = () => {
                 return;
             }
 
-            result.dados.map((lote, index) => {
-                lote.id = index;
-            });
-
             setLotes(result);
         })
-    };
+    }, []);
 
     useEffect(() => {
-        if (lotes.dados.length > 0) return;
-
-        getLotes();
-    }, [getLotes])
+        listAllLotes();
+    }, [listAllLotes]);
 
     const handleEditProduct = (produto: ILote) => {
         setEditingProduct(produto);
@@ -158,7 +152,7 @@ export const useLote = () => {
     };
 
     return {
-        getLotes,
+        listAllLotes,
         lotes,
         isLoadingLote,
         columns,
