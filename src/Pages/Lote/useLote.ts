@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { ILote, ILoteGET, LoteService } from "../../Services/Api/Lote";
 import { toast } from "react-toastify";
-import { ProdutoService } from "../../Services/Api/Produto";
-import { get } from "http";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButtons";
+import dayjs from "dayjs";
 
 export const useLote = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -41,11 +40,12 @@ export const useLote = () => {
             type: 'number',
             headerAlign: 'center',
             align: 'center',
-            valueFormatter: (params: GridRenderCellParams) => {
-                if (params.value == null) {
+            valueFormatter: (value: number | null) => {
+                if (!value || typeof value !== 'number') {
                     return '';
                 }
-                return params.value.toLocaleString('pt-BR', {
+
+                return value.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
                 });
@@ -58,18 +58,10 @@ export const useLote = () => {
             type: 'date',
             headerAlign: 'center',
             align: 'center',
-            valueGetter: (params: GridRenderCellParams) => {
-                // Converte a string YYYY-MM-DD para um objeto Date para a ordenação correta
-                if (!params.value) return null;
-                return new Date(params.value);
-            },
-            valueFormatter: (params: GridRenderCellParams) => {
-                if (params?.value == null) {
-                    return '';
-                }
-                // Formata a data como string
-                const date = new Date(params.value);
-                return date.toLocaleDateString('pt-BR');
+            valueFormatter: (value: string) => {
+                if (!value) return '';
+
+                return dayjs(value).format('DD/MM/YYYY');
             },
         },
         {
@@ -79,16 +71,10 @@ export const useLote = () => {
             type: 'date',
             headerAlign: 'center',
             align: 'center',
-            valueGetter: (params: GridRenderCellParams) => {
-                if (!params.value) return null;
-                return new Date(params.value);
-            },
-            valueFormatter: (params: GridRenderCellParams) => {
-                if (params?.value == null) {
-                    return '';
-                }
-                const date = new Date(params.value);
-                return date.toLocaleDateString('pt-BR');
+            valueFormatter: (value: string) => {
+                if (!value) return '';
+
+                return dayjs(value).format('DD/MM/YYYY');
             },
         },
         /* {
