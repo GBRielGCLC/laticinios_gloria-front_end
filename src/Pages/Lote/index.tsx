@@ -16,7 +16,7 @@ export const Lote = ({
     refreshTable
 }: ILoteProps) => {
     const {
-        getLotes,
+        listAllLotes,
         lotes,
         isLoadingLote,
         columns,
@@ -49,14 +49,14 @@ export const Lote = ({
                 rows={lotes.dados}
                 columns={columns}
                 loading={isLoadingLote}
+                onRefresh={listAllLotes}
             />
-
 
             <FormLote
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 editingProduct={editingProduct}
-                refreshTable={refreshTable}
+                refreshTable={listAllLotes}
             />
         </Box>
     )

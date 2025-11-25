@@ -4,6 +4,8 @@ import {
 } from '@mui/x-data-grid';
 import { ptBR as gridPtBR } from '@mui/x-data-grid/locales';
 import { NoResultsCustom, NoRowsCustom } from './CustomOverlays';
+import { CustomToolbar } from './CustomToolbar';
+import { GridToolbarProps } from '@mui/x-data-grid/internals';
 
 const localeText: DataGridProps['localeText'] = {
     ...gridPtBR.components.MuiDataGrid.defaultProps.localeText,
@@ -13,21 +15,32 @@ const localeText: DataGridProps['localeText'] = {
 
 const paginationModel = { page: 1, pageSize: 10 };
 
-export const PersonalizedDataGrid = (props: DataGridProps, title?: string) => {
+interface PersonalizedDataGridProps extends DataGridProps {
+    onRefresh?: () => void;
+}
+export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
+    /* const renderCustomToolbar = (toolbarProps: GridToolbarProps) => (
+        <CustomToolbar
+            {...toolbarProps}
+            onRefresh={props.onRefresh || (() => { })}
+            isLoading={!!props.loading}
+        />
+    ); */
+
     return (
         <DataGrid
             localeText={localeText}
 
             showToolbar
             slots={{
-                // toolbar: CustomToolbar
+                // toolbar: renderCustomToolbar,
                 noRowsOverlay: NoRowsCustom,
                 noResultsOverlay: NoResultsCustom,
             }}
             slotProps={{
                 toolbar: {
                     csvOptions: { disableToolbarButton: true },
-                    printOptions: { disableToolbarButton: true },
+                    // printOptions: { disableToolbarButton: true },
                 },
                 filterPanel: {
                     sx: {
