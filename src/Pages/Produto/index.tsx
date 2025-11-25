@@ -5,18 +5,12 @@ import { FormProduto } from "./FormProduto";
 import { IProduto } from "../../Services/Api/Produto";
 import { useProduto } from "./useProduto";
 
-interface IProdutoProps {
-    produtos: IProduto[];
-    isLoadingTable?: boolean;
-    refreshTable?: () => void
-    // setProdutos: (produtos: IProduto[]) => void
-}
-export const Produto = ({
-    produtos,
-    refreshTable
-}: IProdutoProps) => {
-    const theme = useTheme();
+export const Produto = () => {
     const {
+        produtos,
+        isLoading,
+        listAllProducts,
+
         isFormOpen,
         setIsFormOpen,
 
@@ -42,16 +36,16 @@ export const Produto = ({
             </Box>
 
             <InventoryTable
-                products={produtos}
+                products={produtos.dados}
                 onClickEdit={handleEditProduct}
-                refreshTable={refreshTable}
+                refreshTable={listAllProducts}
             />
 
             <FormProduto
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 editingProduct={editingProduct}
-                refreshTable={refreshTable}
+                refreshTable={listAllProducts}
             />
         </Box>
     )

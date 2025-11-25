@@ -1,20 +1,10 @@
 import { Box, Button, Typography, useTheme } from "@mui/material"
 import { Add } from "@mui/icons-material"
 import { FormLote } from "./FormLote";
-import { ILote } from "../../Services/Api/Lote";
 import { useLote } from "./useLote";
 import { PersonalizedDataGrid } from "../../Components";
-import { useEffect } from "react";
 
-interface ILoteProps {
-    // lotes: ILote[];
-    isLoadingTable?: boolean;
-    refreshTable?: () => void
-}
-export const Lote = ({
-    // lotes,
-    refreshTable
-}: ILoteProps) => {
+export const Lote = () => {
     const {
         listAllLotes,
         lotes,

@@ -1,7 +1,36 @@
-import { useState } from "react";
-import { IProduto, ProdutoService } from "../../Services/Api/Produto";
+import { useCallback, useEffect, useState } from "react";
+import { IProduto, IProdutoGET, ProdutoService } from "../../Services/Api/Produto";
+import { toast } from "react-toastify";
 
 export const useProduto = () => {
+    const [produtos, setProdutos] = useState<IProdutoGET>({
+        dados: [],
+        totalPaginas: 0,
+        totalRegistros: 0
+    });
+    const [isLoading, setIsLoading] = useState(false)
+
+    const listAllProducts = useCallback(() => {
+        setIsLoading(true);
+
+        ProdutoService.listarProdutos().then((result) => {
+            setIsLoading(false);
+
+            if (result instanceof Error) {
+                setProdutos({ dados: [], totalPaginas: 0, totalRegistros: 0 });
+
+                toast.error(result.message);
+                return;
+            }
+
+            setProdutos(result);
+        });
+    }, []);
+
+    useEffect(() => {
+        listAllProducts();
+    }, []);
+
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<IProduto | null>(null);
 
@@ -15,42 +44,11 @@ export const useProduto = () => {
         setEditingProduct(null);
     };
 
-    /* const handleAddProduct = (productData: Omit<IProduto, "id"> | IProduto) => {
-        if ("id" in productData) {
-            setProdutos(produtosHome.map(p => p.id === productData.id ? productData : p));
-        } else {
-            const newProduct: IProduto = {
-                ...productData,
-                id: Date.now().toString(),
-            };
-            setProdutos([...produtos, newProduct]);
-        }
-        setEditingProduct(null);
-    };
-
-    const handleDeleteProduct = (id: string) => {
-        if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-            setProdutos(produtosHome.filter(p => p.id !== id));
-        }
-    };
-
-    const handleDiscard = (id: string) => {
-        setProdutos(produtosHome.filter(p => p.id !== id));
-    };
-
-    const handleApplyDiscount = (id: string, discount: number) => {
-        setProdutos(produtosHome.map(product => {
-            if (product.id === id) {
-                return {
-                    ...product,
-                    discount: discount,
-                };
-            }
-            return product;
-        }));
-    }; */
-
     return {
+        produtos,
+        isLoading,
+        listAllProducts,
+
         isFormOpen,
         setIsFormOpen,
 

@@ -5,12 +5,8 @@ import {
     Tabs,
     Tab,
 } from '@mui/material';
-import {
-    Venda,
-} from '../../Components';
 
-import { Dashboard, Produto } from "../index";
-import { useHome } from "./useHome";
+import { Produto } from "../Produto";
 import { Lote } from "../Lote";
 
 interface TabPanelProps {
@@ -38,12 +34,6 @@ function TabPanel(props: TabPanelProps) {
 export const Home = () => {
     const [tabValue, setTabValue] = useState(0);
 
-    const {
-        produtos,
-        isLoading,
-        listAllProducts
-    } = useHome();
-
     return (
         <Box sx={{ bgcolor: 'background.default' }}>
             <Container maxWidth={false} sx={{ py: 4 }}>
@@ -57,26 +47,18 @@ export const Home = () => {
                 </Box>
 
                 <TabPanel value={tabValue} index={0}>
-                    <Dashboard products={produtos.dados} />
+                    {/* <Dashboard products={produtos.dados} /> */}
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={1}>
-                    <Produto
-                        produtos={produtos.dados}
-                        isLoadingTable={isLoading}
-                        refreshTable={listAllProducts}
-                    />
+                    <Produto />
                 </TabPanel>
 
                 <TabPanel value={tabValue} index={2}>
-                    <Lote
-                        // produtos={produtos.dados}
-                        isLoadingTable={isLoading}
-                        refreshTable={listAllProducts}
-                    />
+                    <Lote />
                 </TabPanel>
 
-                <TabPanel value={tabValue} index={3}>
+                {/* <TabPanel value={tabValue} index={3}>
                     <Box sx={{
                         width: '100%',
                         display: 'flex',
@@ -84,7 +66,7 @@ export const Home = () => {
                     }}>
                         <Venda products={produtos.dados} />
                     </Box>
-                </TabPanel>
+                </TabPanel> */}
             </Container>
         </Box>
     )
