@@ -12,6 +12,9 @@ export const errorInteceptor = (error: AxiosError) => {
   if (error.response?.status === 401) {// erro de autenticação
     return Promise.reject(new Error('Você não está autenticado ou não tem essa permissão, por favor faça login novamente.'));
   }
+  if(error.response?.status === 404 && !error.response.data) {
+    return Promise.reject(new Error('Registro não encontrado!'));
+  }
   if (error.response?.status === 500) {// erro 500
     console.error(`${error.config?.method} ${error.config?.url}: ${extractMessage(error.response?.data)}`);
     return Promise.reject(new Error('Erro interno do servidor'));
