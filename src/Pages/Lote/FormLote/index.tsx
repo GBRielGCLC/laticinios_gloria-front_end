@@ -98,7 +98,7 @@ export function FormLote(props: FormLoteProps) {
               render={({ field }) => (
                 <DatePicker
                   {...field}
-                  label={"Data da Compra"}
+                  label={"Data de Validade"}
                   value={field.value}
                   onChange={field.onChange}
                   slotProps={{
