@@ -88,7 +88,7 @@ export function useFormLote({
         };
 
         if (editingProduct) {
-            LoteService.editarLote(editingProduct.numeroLote, dataToSubmit).then((result) => {
+            LoteService.editarLote(editingProduct.id, dataToSubmit).then((result) => {
                 setIsLoading(false);
 
                 if (result instanceof Error) {
