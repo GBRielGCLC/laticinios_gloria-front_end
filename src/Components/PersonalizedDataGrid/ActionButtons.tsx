@@ -32,6 +32,7 @@ export const ActionButtons = <T,>({
                         event.stopPropagation();
                         onEdit(row);
                     }}
+                    color='primary'
                 >
                     <Edit />
                 </IconButton>
