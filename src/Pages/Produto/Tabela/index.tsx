@@ -20,6 +20,7 @@ import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { IProduto, ProdutoService } from '../../../Services/Api/Produto';
 import { useConfirm } from '../../../Contexts';
 import { toast } from 'react-toastify';
+import { ActionButtons } from '../../../Components';
 
 interface InventoryTableProps {
     products: IProduto[];
@@ -60,7 +61,7 @@ export function InventoryTable({
         return { label: "Válido", color: "success" as const, days: daysUntilExpiry };
     };
 
-    interface HandleDeleteProdutoProps{
+    interface HandleDeleteProdutoProps {
         id: any;
         setLoading: (v: boolean) => void
         close: () => void;
@@ -149,31 +150,19 @@ export function InventoryTable({
                             </IconButton>
                         )}
 
-                        <IconButton
-                            size="small"
-                            onClick={() => onClickEdit?.(product)}
-                            color="primary"
-                        >
-                            <Edit fontSize="small" />
-                        </IconButton>
-
-                        <IconButton
-                            size="small"
-                            onClick={() => {
-                                confirmDialog({
-                                    titulo: 'Excluir produto',
-                                    conteudo: 'Tem certeza que deseja excluir o produto?',
-                                    onConfirm: async ({ close, setLoading }) => handleDeleteProduto({
-                                        id: product.id,
-                                        setLoading,
-                                        close
-                                    }),
-                                })
-                            }}
-                            color="error"
-                        >
-                            <Delete fontSize="small" />
-                        </IconButton>
+                        <ActionButtons
+                            params={params}
+                            onEdit={() => onClickEdit?.(product)}
+                            onDelete={() => confirmDialog({
+                                titulo: 'Excluir produto',
+                                conteudo: 'Tem certeza que deseja excluir o produto?',
+                                onConfirm: async ({ close, setLoading }) => handleDeleteProduto({
+                                    id: product.id,
+                                    setLoading,
+                                    close
+                                }),
+                            })}
+                        />
                     </Box>
                 );
             },
