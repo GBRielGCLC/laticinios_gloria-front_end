@@ -13,10 +13,7 @@ export const Lote = () => {
 
         isFormOpen,
         setIsFormOpen,
-
         editingProduct,
-
-        handleEditProduct,
         handleCloseForm,
     } = useLote();
 

@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButtons";
 import dayjs from "dayjs";
+import { ConfirmDialog } from "../../Components/ConfirmDialog";
+import { useConfirm } from "../../Contexts";
 
 export const useLote = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -16,6 +18,8 @@ export const useLote = () => {
         totalPaginas: 0,
         totalRegistros: 0
     });
+
+    const confirmDialog = useConfirm();
 
     const columns: GridColDef<ILote>[] = [
         {
@@ -101,7 +105,17 @@ export const useLote = () => {
             renderCell: (params: GridRenderCellParams) => ActionButtons({
                 params,
                 onEdit: handleEditProduct,
-                // onDelete: () => { },
+                onDelete: () => {
+                    confirmDialog({
+                        titulo: 'Excluir Lote',
+                        conteudo: 'Tem certeza que deseja excluir o lote?',
+                        onConfirm: ({ close , setLoading}) => handleDeleteLote({
+                            id: params.row.id,
+                            setLoading,
+                            close
+                        })
+                    })
+                },
             }),
         },
     ];
@@ -137,6 +151,28 @@ export const useLote = () => {
         setEditingProduct(null);
     };
 
+    interface HandleDeleteLoteProps {
+        id: any;
+        setLoading: (v: boolean) => void
+        close: () => void;
+    }
+    const handleDeleteLote = (props: HandleDeleteLoteProps) => {
+        props.setLoading(true);
+
+        LoteService.excluirLote(props.id).then((result) => {
+            props.setLoading(false);
+
+            if (result instanceof Error) {
+                toast.error(result.message);
+                return;
+            }
+
+            toast.success("Lote excluido com sucesso!");
+            listAllLotes();
+            props.close();
+        })
+    }
+
     return {
         listAllLotes,
         lotes,
@@ -145,10 +181,7 @@ export const useLote = () => {
 
         isFormOpen,
         setIsFormOpen,
-
         editingProduct,
-
-        handleEditProduct,
         handleCloseForm,
     }
 }

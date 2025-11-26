@@ -42,8 +42,17 @@ const editarLote = async (id: any, lote: ILotePOST) => {
     }
 };
 
+const excluirLote = async (id: any): Promise<void | Error> => {
+  try {
+    await Api.delete(`${ENTIDADE_API}/${id}`);
+  } catch (error: any) {
+    return error;
+  }
+};
+
 export const LoteService = {
     listarLotes,
     cadastrarLote,
-    editarLote
+    editarLote,
+    excluirLote
 }
