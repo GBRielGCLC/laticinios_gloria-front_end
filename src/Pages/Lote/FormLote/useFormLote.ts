@@ -10,7 +10,16 @@ import dayjs, { Dayjs } from "dayjs";
 const validationSchema = yup.object().shape({
     numeroLote: yup.string().required(),
     quantidade: yup.number().min(1, "A quantidade deve ser maior que zero").required(),
-    valorLoteCompra: yup.number().min(0, "O valor da compra deve ser maior ou igual a zero").required(),
+    valorLoteCompra: yup.number().required().transform((value, originalValue) => {
+            if (typeof originalValue === "string") {
+                const semMascara = originalValue
+                    .replace(/[R$\s.]/g, "")
+                    .replace(",", ".");
+
+                return Number(semMascara);
+            }
+            return value;
+        }),
 
     dataCompra: yup.mixed<Dayjs>()
         .required()

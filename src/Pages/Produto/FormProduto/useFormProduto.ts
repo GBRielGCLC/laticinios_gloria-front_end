@@ -3,15 +3,20 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yup } from "../../../Yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IProduto, IProdutoPOST, ProdutoService } from "../../../Services/Api/Produto";
-import { isForInStatement } from "typescript";
 import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
     nome: yup.string().required(),
-    precoUnitario: yup
-        .number()
-        .min(0, "O custo deve ser maior que zero")
-        .required(),
+    precoUnitario: yup.number().required().transform((value, originalValue) => {
+            if (typeof originalValue === "string") {
+                const semMascara = originalValue
+                    .replace(/[R$\s.]/g, "")
+                    .replace(",", ".");
+
+                return Number(semMascara);
+            }
+            return value;
+        }),
     descricao: yup.string().required(),
 });
 
@@ -34,10 +39,8 @@ export function useFormProduto({
 
     const {
         control,
-        register,
         handleSubmit: hookFormSubmit,
         formState: { errors },
-        watch,
         reset,
     } = useForm<IProdutoPOST>({
         resolver: yupResolver(validationSchema),
@@ -69,7 +72,7 @@ export function useFormProduto({
             ProdutoService.editarProduto(editingProduct.id, data).then((result) => {
                 setIsLoading(false);
 
-                if(result instanceof Error) {
+                if (result instanceof Error) {
                     toast.error(result.message);
                     return;
                 }
@@ -81,7 +84,7 @@ export function useFormProduto({
             ProdutoService.cadastrarProduto(data).then((result) => {
                 setIsLoading(false);
 
-                if(result instanceof Error) {
+                if (result instanceof Error) {
                     toast.error(result.message);
                     return;
                 }
@@ -94,11 +97,11 @@ export function useFormProduto({
 
     return {
         control,
-        register,
         errors,
         isEditing,
         handleSubmit: hookFormSubmit(onSubmitHandler),
 
         isLoading,
+        reset
     };
 }

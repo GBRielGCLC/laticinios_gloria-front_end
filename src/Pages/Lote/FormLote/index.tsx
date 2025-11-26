@@ -13,6 +13,7 @@ import { ILote } from "../../../Services/Api/Lote";
 import { useFormLote } from "./useFormLote";
 import { Controller } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers";
+import { InputMonetario } from "../../../Components";
 
 interface FormLoteProps {
   open: boolean;
@@ -41,7 +42,7 @@ export function FormLote(props: FormLoteProps) {
       <form onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 2 }}>
           <TextField
-            label="Nome do Lote"
+            label="Numero do Lote"
             fullWidth
             required
             {...register("numeroLote")}
@@ -60,14 +61,20 @@ export function FormLote(props: FormLoteProps) {
             disabled={isLoading}
           />
 
-          <TextField
-            label="Valor da Compra"
-            fullWidth
-            required
-            {...register("valorLoteCompra")}
-            error={!!errors.valorLoteCompra}
-            helperText={errors.valorLoteCompra?.message}
-            disabled={isLoading}
+          <Controller
+            name="valorLoteCompra"
+            control={control}
+            render={({ field }) => (
+              <InputMonetario
+                {...field}
+                label="Preço Unitário"
+                fullWidth
+                required
+                error={!!errors.valorLoteCompra}
+                helperText={errors.valorLoteCompra?.message}
+                disabled={isLoading}
+              />
+            )}
           />
 
           <Stack direction="row" spacing={2}>

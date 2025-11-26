@@ -10,6 +10,8 @@ import {
 import { IProduto } from "../../../Services/Api/Produto";
 
 import { useFormProduto } from "./useFormProduto";
+import { InputMonetario } from "../../../Components";
+import { Controller } from "react-hook-form";
 
 interface FormProdutoProps {
   open: boolean;
@@ -21,12 +23,12 @@ interface FormProdutoProps {
 export function FormProduto(props: FormProdutoProps) {
   const {
     control,
-    register,
     errors,
     isEditing,
     handleSubmit,
 
     isLoading,
+    reset
   } = useFormProduto(props);
 
   return (
@@ -37,37 +39,52 @@ export function FormProduto(props: FormProdutoProps) {
 
       <form onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 2 }}>
-          <TextField
-            label="Nome do Produto"
-            fullWidth
-            required
-            {...register("nome")}
-            error={!!errors.nome}
-            helperText={errors.nome?.message}
-            disabled={isLoading}
+          <Controller
+            name="nome"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Nome do Produto"
+                fullWidth
+                required
+                error={!!errors.nome}
+                helperText={errors.nome?.message}
+                disabled={isLoading}
+              />
+            )}
           />
 
-          <TextField
-            label="Descrição"
-            fullWidth
-            required
-            {...register("descricao")}
-            error={!!errors.descricao}
-            helperText={errors.descricao?.message}
-            disabled={isLoading}
+          <Controller
+            name="descricao"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Descrição"
+                fullWidth
+                required
+                error={!!errors.descricao}
+                helperText={errors.descricao?.message}
+                disabled={isLoading}
+              />
+            )}
           />
 
-          <TextField
-            label="Preço Unitário"
-            type="number"
-            inputProps={{ step: 0.01, min: 0 }}
-            placeholder="0.00"
-            fullWidth
-            required
-            {...register("precoUnitario", { valueAsNumber: true })}
-            error={!!errors.precoUnitario}
-            helperText={errors.precoUnitario?.message}
-            disabled={isLoading}
+          <Controller
+            name="precoUnitario"
+            control={control}
+            render={({ field }) => (
+              <InputMonetario
+                {...field}
+                label="Preço Unitário"
+                fullWidth
+                required
+                error={!!errors.precoUnitario}
+                helperText={errors.precoUnitario?.message}
+                disabled={isLoading}
+              />
+            )}
           />
         </DialogContent>
 
