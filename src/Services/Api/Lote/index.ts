@@ -1,5 +1,5 @@
 import { Api } from "../Axios-Config";
-import { BaseApiResponse } from "../Utils";
+import { BaseApiResponse, IPagination, queryToString } from "../Utils";
 
 export interface ILote {
     id: any;
@@ -16,9 +16,10 @@ export interface ILotePOST extends Omit<ILote, "id"> { }
 const ENTIDADE_API = "Lote";
 
 export type ILoteGET = BaseApiResponse<ILote>
-const listarLotes = async (): Promise<ILoteGET | Error> => {
+const listarLotes = async (pagination?: IPagination): Promise<ILoteGET | Error> => {
     try {
-        const { data } = await Api.get(ENTIDADE_API);
+        const queryString = pagination ? queryToString(pagination) : "";
+        const { data } = await Api.get(ENTIDADE_API + queryString);
 
         return data;
     } catch (error: any) {

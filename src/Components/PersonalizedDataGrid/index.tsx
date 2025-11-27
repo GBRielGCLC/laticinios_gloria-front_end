@@ -6,6 +6,7 @@ import { ptBR as gridPtBR } from '@mui/x-data-grid/locales';
 import { NoResultsCustom, NoRowsCustom } from './CustomOverlays';
 import { CustomToolbar } from './CustomToolbar';
 import { GridToolbarProps } from '@mui/x-data-grid/internals';
+import { defaultPaginationsData, IPagination } from '../../Services/Api/Utils';
 
 const localeText: DataGridProps['localeText'] = {
     ...gridPtBR.components.MuiDataGrid.defaultProps.localeText,
@@ -13,10 +14,12 @@ const localeText: DataGridProps['localeText'] = {
     paginationDisplayedRows: ({ from, to, count }) => `${from} - ${to} de ${count}`,
 };
 
-const paginationModel = { page: 1, pageSize: 10 };
+const paginationModel = { page: defaultPaginationsData.pagina, pageSize: defaultPaginationsData.tamanhoPagina };
 
 interface PersonalizedDataGridProps extends DataGridProps {
     onRefresh?: () => void;
+    totalRegistros?: number;
+    onPaginate?(pagination: IPagination): IPagination
 }
 export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
     /* const renderCustomToolbar = (toolbarProps: GridToolbarProps) => (
@@ -41,6 +44,7 @@ export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
                 toolbar: {
                     csvOptions: { disableToolbarButton: true },
                     // printOptions: { disableToolbarButton: true },
+                    
                 },
                 filterPanel: {
                     sx: {
@@ -65,12 +69,6 @@ export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
             autosizeOnMount
             disableRowSelectionOnClick
 
-            initialState={{
-                pagination: { paginationModel },
-            }}
-            pageSizeOptions={[1, 5, 10, 20, 50, 100]}
-
-
             getRowHeight={() => 'auto'} // Altura automática das linhas
             sx={{
                 '& .MuiDataGrid-cell': {
@@ -79,6 +77,14 @@ export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
                     // justifyContent: 'center', // centraliza horizontalmente, está sendo configurado individualmente nas colunas
                 },
             }}
+
+            initialState={{
+                pagination: { paginationModel },
+            }}
+            pageSizeOptions={[1, 5, 10, 20, 50, 100]}
+
+            paginationMode='server'
+            rowCount={props.totalRegistros ?? 0}
 
             {...props}
         />

@@ -6,6 +6,7 @@ import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButto
 import dayjs from "dayjs";
 import { ConfirmDialog } from "../../Components/ConfirmDialog";
 import { useConfirm } from "../../Contexts";
+import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
 
 export const useLote = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -18,6 +19,8 @@ export const useLote = () => {
         totalPaginas: 0,
         totalRegistros: 0
     });
+
+    const [pagination, setPagination] = useState(defaultPaginationsData);
 
     const confirmDialog = useConfirm();
 
@@ -120,10 +123,10 @@ export const useLote = () => {
         },
     ];
 
-    const listAllLotes = useCallback(() => {
+    const listAllLotes = useCallback((pagination?: IPagination) => {
         setIsLoadingLote(true);
 
-        LoteService.listarLotes().then((result) => {
+        LoteService.listarLotes(pagination).then((result) => {
             setIsLoadingLote(false);
 
             if (result instanceof Error) {
@@ -138,8 +141,8 @@ export const useLote = () => {
     }, []);
 
     useEffect(() => {
-        listAllLotes();
-    }, [listAllLotes]);
+        listAllLotes(pagination);
+    }, [listAllLotes, pagination]);
 
     const handleEditProduct = (produto: ILote) => {
         setEditingProduct(produto);
@@ -178,6 +181,8 @@ export const useLote = () => {
         lotes,
         isLoadingLote,
         columns,
+
+        pagination, setPagination,
 
         isFormOpen,
         setIsFormOpen,

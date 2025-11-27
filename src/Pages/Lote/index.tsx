@@ -11,6 +11,8 @@ export const Lote = () => {
         isLoadingLote,
         columns,
 
+        pagination, setPagination,
+
         isFormOpen,
         setIsFormOpen,
         editingProduct,
@@ -36,14 +38,27 @@ export const Lote = () => {
                 rows={lotes.dados}
                 columns={columns}
                 loading={isLoadingLote}
-                onRefresh={listAllLotes}
+
+                rowCount={lotes.totalRegistros}
+
+                paginationModel={{
+                    page: pagination.pagina - 1,
+                    pageSize: pagination.tamanhoPagina
+                }}
+                onPaginationModelChange={(model, details) => {
+                    console.log(model)
+                    setPagination({
+                        pagina: model.page + 1,
+                        tamanhoPagina: model.pageSize
+                    })
+                }}
             />
 
             <FormLote
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 editingProduct={editingProduct}
-                refreshTable={listAllLotes}
+                refreshTable={() => listAllLotes(pagination)}
             />
         </Box>
     )

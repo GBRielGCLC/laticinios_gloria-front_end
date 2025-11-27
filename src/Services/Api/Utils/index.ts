@@ -4,15 +4,27 @@ export interface BaseApiResponse<T> {
     totalPaginas: number,
 }
 
+export interface IPagination {
+    pagina: number,
+    tamanhoPagina: number,
+}
+export const defaultPaginationsData: IPagination = {
+    pagina: 1,
+    tamanhoPagina: 10
+}
+
 /**
- * Passe um array com os filtros(ex: 'nomeCampo=valorCampo'), a função construirá uma query string com os filtros passados.
- * @param {string[]} query - Array de filtros em string.
- * @returns {string} URL construída, ou então uma string vazia caso não tenha nada.
+ * Converte um objeto com filtros para query string.
+ * Ignora valores null/undefined e strings vazias.
+ * 
+ * @param filters Objeto com filtros { pagina: 1, tamanhoPagina: 10 }
+ * @returns string -> "?pagina=1&tamanhoPagina=10"
  */
-export function queryToString(query: string[]): string {
-    let queryString = query.length > 0 ? `?` : '';
+export function queryToString(filters: Record<string, any>): string {
+    const params = Object.entries(filters)
+        .filter(([_, value]) => value !== undefined && value !== null && value !== "") // remove null/undefined e strings vazias
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`) // encode p/ evitar erro com espaços
+        .join("&");
 
-    queryString += query.join('&');
-
-    return queryString;
+    return params ? `?${params}` : "";
 }
