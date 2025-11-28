@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { ILote, ILoteGET, LoteService } from "../../Services/Api/Lote";
+import { IFiltroLote, IListarLotesProps, ILote, ILoteGET, LoteService } from "../../Services/Api/Lote";
 import { toast } from "react-toastify";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButtons";
 import dayjs from "dayjs";
-import { ConfirmDialog } from "../../Components/ConfirmDialog";
 import { useConfirm } from "../../Contexts";
 import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
 
@@ -112,7 +111,7 @@ export const useLote = () => {
                     confirmDialog({
                         titulo: 'Excluir Lote',
                         conteudo: 'Tem certeza que deseja excluir o lote?',
-                        onConfirm: ({ close , setLoading}) => handleDeleteLote({
+                        onConfirm: ({ close, setLoading }) => handleDeleteLote({
                             id: params.row.id,
                             setLoading,
                             close
@@ -123,10 +122,10 @@ export const useLote = () => {
         },
     ];
 
-    const listAllLotes = useCallback((pagination?: IPagination) => {
+    const listAllLotes = useCallback((query: IListarLotesProps) => {
         setIsLoadingLote(true);
 
-        LoteService.listarLotes(pagination).then((result) => {
+        LoteService.listarLotes(query).then((result) => {
             setIsLoadingLote(false);
 
             if (result instanceof Error) {
@@ -141,7 +140,7 @@ export const useLote = () => {
     }, []);
 
     useEffect(() => {
-        listAllLotes(pagination);
+        listAllLotes({ pagination });
     }, [listAllLotes, pagination]);
 
     const handleEditProduct = (produto: ILote) => {
@@ -171,9 +170,27 @@ export const useLote = () => {
             }
 
             toast.success("Lote excluido com sucesso!");
-            listAllLotes();
+            listAllLotes({ pagination });
             props.close();
         })
+    }
+
+    const [openFiltro, setOpenFiltro] = useState(false);
+    const [filtros, setFiltros] = useState<IFiltroLote>();
+
+
+    const handleFiltrar = (filter: IFiltroLote) => {
+        /* const newPagination: IPagination = {
+            pagina: 1,
+            tamanhoPagina: pagination.tamanhoPagina
+        }
+
+        setPagination(newPagination);
+        setFiltros(filter);
+
+        listAllLotes({ pagination: newPagination, filtros: filter }); */
+        listAllLotes({ pagination, filtros: filter });
+        setOpenFiltro(false);
     }
 
     return {
@@ -188,5 +205,8 @@ export const useLote = () => {
         setIsFormOpen,
         editingProduct,
         handleCloseForm,
+
+        openFiltro, setOpenFiltro,
+        filtros, handleFiltrar
     }
 }

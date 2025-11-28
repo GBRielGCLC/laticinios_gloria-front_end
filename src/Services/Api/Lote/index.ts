@@ -16,9 +16,23 @@ export interface ILotePOST extends Omit<ILote, "id"> { }
 const ENTIDADE_API = "Lote";
 
 export type ILoteGET = BaseApiResponse<ILote>
-const listarLotes = async (pagination?: IPagination): Promise<ILoteGET | Error> => {
+
+export interface IListarLotesProps {
+    pagination?: IPagination
+    filtros?: IFiltroLote
+}
+
+export interface IFiltroLote {
+    numeroLote?: string;
+    dataCompra?: string | null;
+    dataValidade?: string | null;
+}
+
+const listarLotes = async ({pagination, filtros}: IListarLotesProps): Promise<ILoteGET | Error> => {
     try {
-        const queryString = pagination ? queryToString(pagination) : "";
+        let mergedObj = {...pagination, ...filtros};
+        let queryString = mergedObj ? queryToString(mergedObj) : "";
+
         const { data } = await Api.get(ENTIDADE_API + queryString);
 
         return data;
