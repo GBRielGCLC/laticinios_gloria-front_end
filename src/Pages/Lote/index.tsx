@@ -45,8 +45,7 @@ export const Lote = () => {
                     page: pagination.pagina - 1,
                     pageSize: pagination.tamanhoPagina
                 }}
-                onPaginationModelChange={(model, details) => {
-                    console.log(model)
+                onPaginationModelChange={(model) => {
                     setPagination({
                         pagina: model.page + 1,
                         tamanhoPagina: model.pageSize
