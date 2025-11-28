@@ -1,22 +1,23 @@
-import { Box, Button, Typography, useTheme } from "@mui/material"
+import { Box, Button } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import { InventoryTable } from "./Tabela";
 import { FormProduto } from "./FormProduto";
-import { IProduto } from "../../Services/Api/Produto";
 import { useProduto } from "./useProduto";
+import { PersonalizedDataGrid } from "../../Components";
 
 export const Produto = () => {
     const {
         produtos,
         isLoading,
         listAllProducts,
+        columns,
+
+        pagination, setPagination,
 
         isFormOpen,
         setIsFormOpen,
 
         editingProduct,
 
-        handleEditProduct,
         handleCloseForm,
     } = useProduto();
 
@@ -35,17 +36,29 @@ export const Produto = () => {
                 </Button>
             </Box>
 
-            <InventoryTable
-                products={produtos.dados}
-                onClickEdit={handleEditProduct}
-                refreshTable={listAllProducts}
+            <PersonalizedDataGrid
+                columns={columns}
+                rows={produtos.dados}
+                loading={isLoading}
+                totalRegistros={produtos.totalRegistros}
+
+                paginationModel={{
+                    page: pagination.pagina - 1,
+                    pageSize: pagination.tamanhoPagina
+                }}
+                onPaginationModelChange={(model) => {
+                    setPagination({
+                        pagina: model.page + 1,
+                        tamanhoPagina: model.pageSize
+                    })
+                }}
             />
 
             <FormProduto
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 editingProduct={editingProduct}
-                refreshTable={listAllProducts}
+                refreshTable={() => listAllProducts(pagination)}
             />
         </Box>
     )

@@ -1,5 +1,5 @@
 import { Api } from "../Axios-Config";
-import { BaseApiResponse } from "../Utils";
+import { BaseApiResponse, IPagination, queryToString } from "../Utils";
 
 export interface IProduto {
   id: number;
@@ -14,9 +14,10 @@ export interface IProdutoPOST extends Omit<IProduto, "id"> { }
 const ENTIDADE_API = "Produto";
 
 export type IProdutoGET = BaseApiResponse<IProduto>
-const listarProdutos = async (): Promise<IProdutoGET | Error> => {
+const listarProdutos = async (pagination?: IPagination): Promise<IProdutoGET | Error> => {
   try {
-    const { data } = await Api.get(ENTIDADE_API);
+    const queryString = pagination ? queryToString(pagination) : "";
+    const { data } = await Api.get(ENTIDADE_API + queryString);
 
     return data;
   } catch (error: any) {
