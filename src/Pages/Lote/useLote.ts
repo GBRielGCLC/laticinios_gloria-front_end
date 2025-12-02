@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { IFiltroLote, IListarLotesProps, ILote, ILoteGET, LoteService } from "../../Services/Api/Lote";
 import { toast } from "react-toastify";
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButtons";
 import dayjs from "dayjs";
 import { useConfirm } from "../../Contexts";
@@ -122,8 +122,12 @@ export const useLote = () => {
         },
     ];
 
-    const listAllLotes = useCallback((query: IListarLotesProps) => {
+    const listAllLotes = useCallback((query?: IListarLotesProps) => {
         setIsLoadingLote(true);
+
+        if (!query) query = {};
+        if (!query.pagination) query.pagination = pagination;
+        if (!query.filtros) query.filtros = filtros;
 
         LoteService.listarLotes(query).then((result) => {
             setIsLoadingLote(false);
@@ -140,8 +144,18 @@ export const useLote = () => {
     }, []);
 
     useEffect(() => {
-        listAllLotes({ pagination });
-    }, [listAllLotes, pagination]);
+      listAllLotes({ pagination, filtros });
+    }, []);
+
+    const handlePageChange = (model: GridPaginationModel) => {
+        const modelPagination = {
+            pagina: model.page + 1,
+            tamanhoPagina: model.pageSize
+        }
+
+        setPagination(modelPagination);
+        listAllLotes({ pagination: modelPagination, filtros });
+    };
 
     const handleEditProduct = (produto: ILote) => {
         setEditingProduct(produto);
@@ -170,14 +184,13 @@ export const useLote = () => {
             }
 
             toast.success("Lote excluido com sucesso!");
-            listAllLotes({ pagination });
+            listAllLotes({ pagination, filtros });
             props.close();
         })
     }
 
     const [openFiltro, setOpenFiltro] = useState(false);
     const [filtros, setFiltros] = useState<IFiltroLote>();
-
 
     const handleFiltrar = (filter: IFiltroLote) => {
         /* const newPagination: IPagination = {
@@ -189,17 +202,19 @@ export const useLote = () => {
         setFiltros(filter);
 
         listAllLotes({ pagination: newPagination, filtros: filter }); */
-        listAllLotes({ pagination, filtros: filter });
+        setFiltros(filter);
+        listAllLotes({ filtros: filter, pagination });
         setOpenFiltro(false);
     }
 
-    return {
+
+    return { 
         listAllLotes,
         lotes,
         isLoadingLote,
         columns,
 
-        pagination, setPagination,
+        pagination, handlePageChange,
 
         isFormOpen,
         setIsFormOpen,

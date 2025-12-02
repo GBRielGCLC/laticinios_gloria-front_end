@@ -12,7 +12,7 @@ export const Lote = () => {
         isLoadingLote,
         columns,
 
-        pagination, setPagination,
+        pagination, handlePageChange,
 
         isFormOpen,
         setIsFormOpen,
@@ -55,12 +55,7 @@ export const Lote = () => {
                     page: pagination.pagina - 1,
                     pageSize: pagination.tamanhoPagina
                 }}
-                onPaginationModelChange={(model) => {
-                    setPagination({
-                        pagina: model.page + 1,
-                        tamanhoPagina: model.pageSize
-                    })
-                }}
+                onPaginationModelChange={handlePageChange}
             />
 
             <FormLote
