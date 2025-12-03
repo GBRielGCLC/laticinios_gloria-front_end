@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { IProduto, IProdutoGET, ProdutoService } from "../../Services/Api/Produto";
+import { IFiltroProduto, IListarProdutosProps, IProduto, IProdutoGET, ProdutoService } from "../../Services/Api/Produto";
 import { toast } from "react-toastify";
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components";
 import { useConfirm } from "../../Contexts";
 import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
-
 export const useProduto = () => {
     const [produtos, setProdutos] = useState<IProdutoGET>({
         dados: [],
@@ -16,10 +15,10 @@ export const useProduto = () => {
 
     const [pagination, setPagination] = useState(defaultPaginationsData);
 
-    const listAllProducts = useCallback((pagination?: IPagination) => {
+    const listAllProducts = useCallback((query: IListarProdutosProps) => {
         setIsLoading(true);
 
-        ProdutoService.listarProdutos(pagination).then((result) => {
+        ProdutoService.listarProdutos(query).then((result) => {
             setIsLoading(false);
 
             if (result instanceof Error) {
@@ -34,8 +33,8 @@ export const useProduto = () => {
     }, []);
 
     useEffect(() => {
-        listAllProducts(pagination);
-    }, [listAllProducts, pagination]);
+        listAllProducts({ pagination, filtros });
+    }, []);
 
     const confirmDialog = useConfirm();
 
@@ -116,9 +115,28 @@ export const useProduto = () => {
             }
 
             toast.success("Produto excluido com sucesso!");
-            listAllProducts(pagination);
+            listAllProducts({ pagination, filtros });
             props.close();
         })
+    };
+
+    const handlePageChange = (model: GridPaginationModel) => {
+        const modelPagination = {
+            pagina: model.page + 1,
+            tamanhoPagina: model.pageSize
+        }
+
+        setPagination(modelPagination);
+        listAllProducts({ pagination: modelPagination, filtros });
+    };
+
+    const [openFiltro, setOpenFiltro] = useState(false);
+    const [filtros, setFiltros] = useState<IFiltroProduto>({ ativo: true });
+
+    const handleFiltrar = (filter: IFiltroProduto) => {
+        setFiltros(filter);
+        listAllProducts({ filtros: filter, pagination });
+        setOpenFiltro(false);
     }
 
     return {
@@ -127,7 +145,7 @@ export const useProduto = () => {
         listAllProducts,
         columns,
 
-        pagination, setPagination,
+        pagination, handlePageChange,
 
         isFormOpen,
         setIsFormOpen,
@@ -136,5 +154,8 @@ export const useProduto = () => {
 
         handleEditProduct,
         handleCloseForm,
+
+        openFiltro, setOpenFiltro,
+        filtros, handleFiltrar
     }
 }

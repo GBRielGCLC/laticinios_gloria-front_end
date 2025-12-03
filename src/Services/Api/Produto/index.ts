@@ -13,10 +13,22 @@ export interface IProdutoPOST extends Omit<IProduto, "id"> { }
 
 const ENTIDADE_API = "Produto";
 
+export interface IFiltroProduto {
+  valor?: string | null;
+  ativo?: boolean | null;
+}
+
+export interface IListarProdutosProps {
+  pagination?: IPagination
+  filtros?: IFiltroProduto
+}
+
 export type IProdutoGET = BaseApiResponse<IProduto>
-const listarProdutos = async (pagination?: IPagination): Promise<IProdutoGET | Error> => {
+const listarProdutos = async ({ pagination, filtros }: IListarProdutosProps): Promise<IProdutoGET | Error> => {
   try {
-    const queryString = pagination ? queryToString(pagination) : "";
+    let mergedObj = { ...pagination, ...filtros };
+    let queryString = mergedObj ? queryToString(mergedObj) : "";
+
     const { data } = await Api.get(ENTIDADE_API + queryString);
 
     return data;

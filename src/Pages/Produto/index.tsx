@@ -3,6 +3,7 @@ import { Add } from "@mui/icons-material"
 import { FormProduto } from "./FormProduto";
 import { useProduto } from "./useProduto";
 import { PersonalizedDataGrid } from "../../Components";
+import { FiltroProduto } from "./Filtro";
 
 export const Produto = () => {
     const {
@@ -11,7 +12,7 @@ export const Produto = () => {
         listAllProducts,
         columns,
 
-        pagination, setPagination,
+        pagination, handlePageChange,
 
         isFormOpen,
         setIsFormOpen,
@@ -19,6 +20,9 @@ export const Produto = () => {
         editingProduct,
 
         handleCloseForm,
+
+        openFiltro, setOpenFiltro,
+        filtros, handleFiltrar
     } = useProduto();
 
     return (
@@ -46,19 +50,23 @@ export const Produto = () => {
                     page: pagination.pagina - 1,
                     pageSize: pagination.tamanhoPagina
                 }}
-                onPaginationModelChange={(model) => {
-                    setPagination({
-                        pagina: model.page + 1,
-                        tamanhoPagina: model.pageSize
-                    })
-                }}
+                onPaginationModelChange={handlePageChange}
+
+                onClickFilter={() => setOpenFiltro(true)}
+                onRefresh={() => listAllProducts({ pagination, filtros })}
             />
 
             <FormProduto
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 editingProduct={editingProduct}
-                refreshTable={() => listAllProducts(pagination)}
+                refreshTable={() => listAllProducts({ pagination, filtros })}
+            />
+
+            <FiltroProduto
+                open={openFiltro}
+                onClose={() => setOpenFiltro(false)}
+                onFiltrar={handleFiltrar}
             />
         </Box>
     )
