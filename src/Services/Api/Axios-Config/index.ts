@@ -2,8 +2,9 @@ import axios from 'axios';
 import { responseInterceptor, errorInteceptor } from './Interceptors';
 // import { reportProgress } from './progressManager';
 const Api = axios.create({
-    baseURL: process.env.NODE_ENV === 'production' ?
-    '' : 'http://localhost:5122/api/v1',
+    // baseURL: process.env.NODE_ENV === 'production' ?
+    // '' : 'http://localhost:5122/api/v1',
+    baseURL: 'http://localhost:5122/api/v1',
 });
 
 Api.interceptors.request.use(config => {
