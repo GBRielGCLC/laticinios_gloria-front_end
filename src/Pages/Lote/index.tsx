@@ -1,5 +1,5 @@
-import { Box, Button, Typography, useTheme } from "@mui/material"
-import { Add, FilterAlt } from "@mui/icons-material"
+import { Box, Button } from "@mui/material"
+import { Add } from "@mui/icons-material"
 import { FormLote } from "./FormLote";
 import { useLote } from "./useLote";
 import { PersonalizedDataGrid } from "../../Components";
@@ -29,9 +29,6 @@ export const Lote = () => {
                 <Box></Box>
 
                 <Box display='flex' flexDirection='row' gap={1}>
-                    <Button variant="outlined" onClick={() => setOpenFiltro(true)} endIcon={<FilterAlt />}>
-                        Filtrar Lotes
-                    </Button>
 
                     <Button
                         variant="contained"
@@ -56,6 +53,9 @@ export const Lote = () => {
                     pageSize: pagination.tamanhoPagina
                 }}
                 onPaginationModelChange={handlePageChange}
+
+                onClickFilter={() => setOpenFiltro(true)}
+                onRefresh={() => listAllLotes({ pagination, filtros })}
             />
 
             <FormLote
