@@ -1,110 +1,76 @@
-// PersonalizedDataGrid/CustomToolbar.tsx (Refatorado)
-
 import React from 'react';
 import {
     GridToolbarContainer,
-    GridToolbarQuickFilter,
-    ToolbarButton,
-    GridToolbarProps,
-    // Assumimos que estes são imports dos painéis/triggers
     ColumnsPanelTrigger,
-    FilterPanelTrigger,
-    GridToolbarExport,
-    GridToolbarDensitySelector
+    // ExportTrigger,
+    ToolbarButton,
 } from '@mui/x-data-grid';
+import { Box, Divider, keyframes, Tooltip } from '@mui/material';
 
-import {
-    Tooltip,
-    Badge,
-    Divider,
-    Box,
-    CircularProgress,
-    IconButton // Se ToolbarButton não for um IconButton
-} from '@mui/material';
-
-// Assumimos que estes ícones estão importados corretamente
-import ViewColumn from '@mui/icons-material/ViewColumn';
-import FilterList from '@mui/icons-material/FilterList';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { FilterAlt, ViewColumn } from '@mui/icons-material';
 
-
-// Interface para injetar as props de controle
-interface CustomToolbarProps extends GridToolbarProps {
-    onRefresh: () => void;
+interface CustomToolbarProps {
     isLoading: boolean;
+    onRefresh?: () => void;
+    onClickFilter?: () => void;
 }
 
-
-export const CustomToolbar = ({ onRefresh, isLoading, ...props }: CustomToolbarProps) => {
-
-    // Propriedades comuns para botões baseados em ToolbarButton/IconButton
-    const iconButtonProps = { size: 'small' as const, color: 'default' as const };
+export const CustomToolbar = ({ onRefresh, isLoading, onClickFilter }: CustomToolbarProps) => {
+    const spin = keyframes`
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    `;
 
     return (
-        <GridToolbarContainer
-            sx={{
-                p: 1,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderBottom: 1,
-                borderColor: 'divider'
-            }}
-        >
-            {/* ⬅️ BLOCO DE CONTROLES (Esquerda): Colunas, Filtros, Densidade, Exportar */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                {/* 1. Colunas */}
-                <ColumnsPanelTrigger render={<ToolbarButton {...iconButtonProps} />}>
+        <GridToolbarContainer sx={{
+            p: 1,
+            display: 'flex',
+            alignItems: 'end',
+        }}>
+            <Tooltip title="Colunas">
+                <ColumnsPanelTrigger render={<ToolbarButton />}>
                     <ViewColumn fontSize="small" />
                 </ColumnsPanelTrigger>
+            </Tooltip>
 
-                {/* 2. Filtros */}
-                <FilterPanelTrigger
-                    render={(triggerProps, state) => (
-                        <ToolbarButton {...triggerProps} {...iconButtonProps}>
-                            <Badge badgeContent={state.filterCount} color="primary" variant="dot">
-                                <FilterList fontSize="small" />
-                            </Badge>
-                        </ToolbarButton>
-                    )}
-                />
+            {/* <Tooltip title="Export PDF">
+                <ExportTrigger
+                    slotProps={{
+                        button: { variant: 'pdf' }, // exporta só PDF
+                    }}
+                >
+                    <ToolbarButton />
+                </ExportTrigger>
+            </Tooltip> */}
 
-                {/* 3. Densidade (Se você for usar este controle) */}
-                <GridToolbarDensitySelector />
+            {(onClickFilter || onRefresh) && <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 0.5 }} />}
 
-                {/* 4. Exportar (Usamos o componente padrão do MUI que aceita as props de estilo) */}
-                <GridToolbarExport/>
-            </Box>
+            {onClickFilter && <Tooltip title="Filtro">
+                <ToolbarButton onClick={onClickFilter}>
+                    <FilterAlt fontSize="small" />
+                </ToolbarButton>
+            </Tooltip>}
 
-            {/* ➡️ BLOCO DE AÇÕES (Direita): Busca Rápida e Refresh */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {onRefresh && <Tooltip title="Recarregar">
+                <span>
+                    <ToolbarButton
+                        onClick={onRefresh}
+                        disabled={isLoading}
 
-                {/* 5. Busca Rápida (Quick Filter) */}
-                <GridToolbarQuickFilter />
-
-                <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 0.5 }} />
-
-                {/* 6. Botão de Refresh */}
-                <Tooltip title="Atualizar Dados">
-                    <span style={{
-                        display: 'flex',
-                    }}>
-                        <IconButton
-                            color="inherit"
-                            onClick={onRefresh}
-                            disabled={isLoading}
-                            size="medium"
-                        >
-                            {isLoading
-                                ? <CircularProgress size={20} color="inherit" />
-                                : <RefreshIcon fontSize="small" />
-                            }
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Box>
+                    >
+                        <RefreshIcon
+                            fontSize="small"
+                            sx={{
+                                animation: isLoading
+                                    ? `${spin} 0.8s linear infinite`
+                                    : 'none',
+                                transition: 'transform 0.3s ease',
+                            }}
+                        />
+                    </ToolbarButton>
+                </span>
+            </Tooltip>}
         </GridToolbarContainer>
     );
 };

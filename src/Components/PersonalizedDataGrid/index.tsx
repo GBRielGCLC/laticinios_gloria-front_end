@@ -17,18 +17,21 @@ const localeText: DataGridProps['localeText'] = {
 const paginationModel = { page: defaultPaginationsData.pagina, pageSize: defaultPaginationsData.tamanhoPagina };
 
 interface PersonalizedDataGridProps extends DataGridProps {
-    onRefresh?: () => void;
     totalRegistros?: number;
     onPaginate?(pagination: IPagination): IPagination
+    onRefresh?: () => void;
+    onClickFilter?: () => void
 }
 export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
-    /* const renderCustomToolbar = (toolbarProps: GridToolbarProps) => (
+    const renderCustomToolbar = (toolbarProps: GridToolbarProps) => (
         <CustomToolbar
             {...toolbarProps}
-            onRefresh={props.onRefresh || (() => { })}
+            onRefresh={props.onRefresh}
+            // isLoading={true}
             isLoading={!!props.loading}
+        onClickFilter={props.onClickFilter}
         />
-    ); */
+    );
 
     return (
         <DataGrid
@@ -36,7 +39,7 @@ export const PersonalizedDataGrid = (props: PersonalizedDataGridProps) => {
 
             showToolbar
             slots={{
-                // toolbar: renderCustomToolbar,
+                toolbar: renderCustomToolbar,
                 noRowsOverlay: NoRowsCustom,
                 noResultsOverlay: NoResultsCustom,
             }}
