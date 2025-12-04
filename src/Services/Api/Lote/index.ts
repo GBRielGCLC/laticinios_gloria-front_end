@@ -28,9 +28,9 @@ export interface IFiltroLote {
     dataValidade?: string | null;
 }
 
-const listarLotes = async ({pagination, filtros}: IListarLotesProps): Promise<ILoteGET | Error> => {
+const listarLotes = async (queryParams?: IListarLotesProps): Promise<ILoteGET | Error> => {
     try {
-        let mergedObj = {...pagination, ...filtros};
+        let mergedObj = {...queryParams?.pagination, ...queryParams?.filtros};
         let queryString = mergedObj ? queryToString(mergedObj) : "";
 
         const { data } = await Api.get(ENTIDADE_API + queryString);

@@ -24,9 +24,9 @@ export interface IListarProdutosProps {
 }
 
 export type IProdutoGET = BaseApiResponse<IProduto>
-const listarProdutos = async ({ pagination, filtros }: IListarProdutosProps): Promise<IProdutoGET | Error> => {
+const listarProdutos = async (queryParams?: IListarProdutosProps): Promise<IProdutoGET | Error> => {
   try {
-    let mergedObj = { ...pagination, ...filtros };
+    let mergedObj = { ...queryParams?.pagination, ...queryParams?.filtros };
     let queryString = mergedObj ? queryToString(mergedObj) : "";
 
     const { data } = await Api.get(ENTIDADE_API + queryString);
