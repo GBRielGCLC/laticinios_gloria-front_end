@@ -8,6 +8,7 @@ import {
 
 import { Produto } from "../Produto";
 import { Lote } from "../Lote";
+import { Item } from "../Item";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -32,17 +33,22 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const Home = () => {
-    const [tabValue, setTabValue] = useState(0);
+    const [tabValue, setTabValue] = useState(Number(localStorage.getItem('tabValue')) || 0);
+
+    const handleTabChange = (event: React.SyntheticEvent, newValue: any) => {
+        setTabValue(newValue);
+        localStorage.setItem('tabValue', newValue);
+    };
 
     return (
         <Box sx={{ bgcolor: 'background.default' }}>
             <Container maxWidth={false} sx={{ py: 4 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-                    <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
+                    <Tabs value={tabValue} onChange={handleTabChange}>
                         <Tab label="Painel" />
                         <Tab label="Produtos" />
                         <Tab label="Lotes" />
-                        <Tab label="Vendas" />
+                        <Tab label="Itens" />
                     </Tabs>
                 </Box>
 
@@ -56,6 +62,10 @@ export const Home = () => {
 
                 <TabPanel value={tabValue} index={2}>
                     <Lote />
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={3}>
+                    <Item />
                 </TabPanel>
 
                 {/* <TabPanel value={tabValue} index={3}>
