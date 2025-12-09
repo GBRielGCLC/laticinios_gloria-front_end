@@ -3,9 +3,9 @@ import { IFiltroItem, IListarItensProps, IItem, IItemGET, ItemService } from "..
 import { toast } from "react-toastify";
 import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButtons";
-import dayjs from "dayjs";
 import { useConfirm } from "../../Contexts";
 import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
+import { Formatters } from "../../Services/Utils/Formatters";
 
 const initialFiltros: IFiltroItem = {
     produtoId: undefined,
@@ -86,16 +86,7 @@ export const useItem = () => {
             type: 'number',
             headerAlign: 'center',
             align: 'center',
-            valueFormatter: (value: number | null) => {
-                if (value !== 0 && !value || typeof value !== 'number') {
-                    return '';
-                }
-
-                return value.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-            },
+            valueFormatter: (value: number | null) => Formatters.formatadorMonetario(value),
         },
         {
             field: 'unidadeMedida',

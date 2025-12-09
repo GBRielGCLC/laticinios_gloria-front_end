@@ -3,9 +3,9 @@ import { IFiltroLote, IListarLotesProps, ILote, ILoteGET, LoteService } from "..
 import { toast } from "react-toastify";
 import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButtons";
-import dayjs from "dayjs";
 import { useConfirm } from "../../Contexts";
 import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
+import { Formatters } from "../../Services/Utils/Formatters";
 
 export const useLote = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -46,16 +46,7 @@ export const useLote = () => {
             type: 'number',
             headerAlign: 'center',
             align: 'center',
-            valueFormatter: (value: number | null) => {
-                if (!value || typeof value !== 'number') {
-                    return '';
-                }
-
-                return value.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-            },
+            valueFormatter: (value: number | null) => Formatters.formatadorMonetario(value),
         },
         {
             field: 'dataCompra',
@@ -64,11 +55,7 @@ export const useLote = () => {
             type: 'date',
             headerAlign: 'center',
             align: 'center',
-            valueFormatter: (value: string) => {
-                if (!value) return '';
-
-                return dayjs(value).format('DD/MM/YYYY');
-            },
+            valueFormatter: (value: string) => Formatters.formatadorDataVisual(value),
         },
         {
             field: 'dataValidade',
@@ -77,11 +64,7 @@ export const useLote = () => {
             type: 'date',
             headerAlign: 'center',
             align: 'center',
-            valueFormatter: (value: string) => {
-                if (!value) return '';
-
-                return dayjs(value).format('DD/MM/YYYY');
-            },
+            valueFormatter: (value: string) => Formatters.formatadorDataVisual(value),
         },
         /* {
             field: 'itens',

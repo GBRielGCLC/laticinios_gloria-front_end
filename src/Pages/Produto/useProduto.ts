@@ -4,7 +4,9 @@ import { toast } from "react-toastify";
 import { GridColDef, GridPaginationModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { ActionButtons } from "../../Components";
 import { useConfirm } from "../../Contexts";
-import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
+import { defaultPaginationsData } from "../../Services/Api/Utils";
+import { Formatters } from "../../Services/Utils/Formatters";
+
 export const useProduto = () => {
     const [produtos, setProdutos] = useState<IProdutoGET>({
         dados: [],
@@ -59,7 +61,7 @@ export const useProduto = () => {
             align: 'center',
             headerAlign: 'center',
             flex: 1,
-            valueFormatter: (value: number) => `R$ ${value.toFixed(2)}`,
+            valueFormatter: (value: number) => Formatters.formatadorMonetario(value),
         },
         {
             field: 'actions',
