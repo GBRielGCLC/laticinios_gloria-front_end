@@ -1,5 +1,3 @@
-// Item.zip/Item/FormItem/useFormItem.ts
-
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as yup from "yup"; // Assumindo que yup é importado assim ou via um arquivo de config
@@ -35,9 +33,7 @@ export function useFormItem({
 
     const {
         control,
-        register,
         handleSubmit: hookFormSubmit,
-        formState: { errors },
         reset,
     } = useForm<IFormItem>({
         resolver: yupResolver(validationSchema),
@@ -70,7 +66,6 @@ export function useFormItem({
         const dataToSubmit: IItemPOST = data;
 
         if (isEditing && editingItem) {
-            // Edição usa os IDs originais do item para identificar
             ItemService.editarItem(editingItem.id, dataToSubmit).then((result) => {
                 setIsLoading(false);
 
@@ -100,8 +95,6 @@ export function useFormItem({
 
     return {
         control,
-        register,
-        errors,
         isEditing,
         handleSubmit: hookFormSubmit(onSubmitHandler),
 
