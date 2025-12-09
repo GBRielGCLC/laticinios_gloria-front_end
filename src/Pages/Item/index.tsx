@@ -21,7 +21,9 @@ export const Item = () => {
         handleCloseForm,
 
         openFiltro, setOpenFiltro,
-        filtros, handleFiltrar
+        filtros, handleFiltrar,
+
+        produtos, lotes
     } = useItem();
 
     return (
@@ -56,14 +58,17 @@ export const Item = () => {
                 onPaginationModelChange={handlePageChange}
 
                 // onClickFilter={() => setOpenFiltro(true)}
-                onRefresh={() => listAllItens({ pagination, filtros })} 
+                onRefresh={() => listAllItens({ pagination, filtros })}
             />
 
             <FormItem
                 open={isFormOpen}
                 onClose={handleCloseForm}
                 editingItem={editingItem}
-                refreshTable={() => listAllItens({ pagination, filtros })} 
+                refreshTable={() => listAllItens({ pagination, filtros })}
+
+                produtos={produtos}
+                lotes={lotes}
             />
 
             {/* <FiltroItem

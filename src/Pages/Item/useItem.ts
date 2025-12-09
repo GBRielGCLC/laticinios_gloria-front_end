@@ -6,6 +6,8 @@ import { ActionButtons } from "../../Components/PersonalizedDataGrid/ActionButto
 import { useConfirm } from "../../Contexts";
 import { defaultPaginationsData, IPagination } from "../../Services/Api/Utils";
 import { Formatters } from "../../Services/Utils/Formatters";
+import { IProduto, ProdutoService } from "../../Services/Api/Produto";
+import { ILote, LoteService } from "../../Services/Api/Lote";
 
 const initialFiltros: IFiltroItem = {
     produtoId: undefined,
@@ -29,10 +31,8 @@ export const useItem = () => {
 
     const confirmDialog = useConfirm();
 
-    // O estado para os filtros
     const [openFiltro, setOpenFiltro] = useState(false);
     const [filtros, setFiltros] = useState<IFiltroItem>(initialFiltros);
-
 
     const handleEditItem = (item: IItem) => {
         setEditingItem(item);
@@ -60,7 +60,6 @@ export const useItem = () => {
             props.close();
         })
     }
-
 
     const columns: GridColDef<IItem>[] = [
         /* {
@@ -154,7 +153,7 @@ export const useItem = () => {
 
             setItens(result);
         })
-    }, [pagination, filtros]); // Adicione pagination e filtros como dependências
+    }, [pagination, filtros]);
 
     useEffect(() => {
         listAllItens({ pagination, filtros });
@@ -189,6 +188,38 @@ export const useItem = () => {
         setOpenFiltro(false);
     }
 
+    const [produtos, setProdutos] = useState<IProduto[]>([]);
+    const [lotes, setLotes] = useState<ILote[]>([]);
+
+    const getDadosSelects = useCallback(() => {
+        ProdutoService.listarProdutos().then((result) => {
+
+            if (result instanceof Error) {
+                setProdutos([]);
+
+                toast.error(result.message);
+                return;
+            }
+
+            setProdutos(result.dados);
+        });
+
+        LoteService.listarLotes().then((result) => {
+
+            if (result instanceof Error) {
+                setLotes([]);
+
+                toast.error(result.message);
+                return;
+            }
+
+            setLotes(result.dados);
+        })
+    }, []);
+
+    useEffect(() => {
+        getDadosSelects();
+    }, [getDadosSelects]);
 
     return {
         listAllItens,
@@ -204,6 +235,8 @@ export const useItem = () => {
         handleCloseForm,
 
         openFiltro, setOpenFiltro,
-        filtros, handleFiltrar
+        filtros, handleFiltrar,
+
+        produtos, lotes
     }
 }
