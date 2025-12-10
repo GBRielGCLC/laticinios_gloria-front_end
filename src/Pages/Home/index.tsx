@@ -9,6 +9,7 @@ import {
 import { Produto } from "../Produto";
 import { Lote } from "../Lote";
 import { Item } from "../Item";
+import { Venda } from "../Venda";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -49,6 +50,7 @@ export const Home = () => {
                         <Tab label="Produtos" />
                         <Tab label="Lotes" />
                         <Tab label="Itens" />
+                        <Tab label="Venda" />
                     </Tabs>
                 </Box>
 
@@ -68,15 +70,15 @@ export const Home = () => {
                     <Item />
                 </TabPanel>
 
-                {/* <TabPanel value={tabValue} index={3}>
+                <TabPanel value={tabValue} index={4}>
                     <Box sx={{
                         width: '100%',
                         display: 'flex',
                         justifyContent: 'center',
                     }}>
-                        <Venda products={produtos.dados} />
+                        <Venda />
                     </Box>
-                </TabPanel> */}
+                </TabPanel>
             </Container>
         </Box>
     )
