@@ -35,9 +35,9 @@ export interface IFiltroItem {
     unidadeMedida?: number;
 }
 
-const listarItens = async ({pagination, filtros}: IListarItensProps): Promise<IItemGET | Error> => {
+const listarItens = async (queryParams?: IListarItensProps): Promise<IItemGET | Error> => {
     try {
-        let mergedObj = {...pagination, ...filtros};
+        let mergedObj = {...queryParams?.pagination, ...queryParams?.filtros};
         let queryString = mergedObj ? queryToString(mergedObj) : "";
 
         const { data } = await Api.get(ENTIDADE_API + queryString);
