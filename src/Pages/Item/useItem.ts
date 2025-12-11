@@ -62,22 +62,39 @@ export const useItem = () => {
     }
 
     const columns: GridColDef<IItem>[] = [
-        /* {
+        {
             field: 'produtoNome',
             headerName: 'Produto',
             flex: 2,
             headerAlign: 'center',
             align: 'center',
-            valueGetter: (params) => params.row.produto.nome,
-        }, */
-        /* {
+            renderCell: (params: GridRenderCellParams<IItem>) => params.row.produto?.nome || '',
+        },
+        {
             field: 'numeroLote',
             headerName: 'Nº Lote',
             flex: 1,
             headerAlign: 'center',
             align: 'center',
-            valueGetter: (params) => params.row.lote.numeroLote,
-        }, */
+            renderCell: (params: GridRenderCellParams<IItem>) => params.row.lote?.numeroLote || '',
+        },
+        {
+            field: 'quantidade',
+            headerName: 'Quantidade (Lote)',
+            flex: 1,
+            headerAlign: 'center',
+            align: 'center',
+            renderCell: (params: GridRenderCellParams<IItem>) => params.row.lote?.quantidade || '',
+        },
+        {
+            field: 'dataValidadeLote',
+            headerName: 'Validade (Lote)',
+            flex: 1,
+            type: 'date',
+            headerAlign: 'center',
+            align: 'center',
+            renderCell: (params: GridRenderCellParams<IItem>) => Formatters.formatadorDataVisual(params.row.lote?.dataValidade) || '',
+        },
         {
             field: 'preco',
             headerName: 'Preço (Item)',
@@ -85,7 +102,7 @@ export const useItem = () => {
             type: 'number',
             headerAlign: 'center',
             align: 'center',
-            valueFormatter: (value: number | null) => Formatters.formatadorMonetario(value),
+            valueFormatter: Formatters.formatadorMonetario,
         },
         {
             field: 'unidadeMedida',
@@ -94,20 +111,6 @@ export const useItem = () => {
             headerAlign: 'center',
             align: 'center',
         },
-        /* {
-            field: 'dataValidadeLote',
-            headerName: 'Validade (Lote)',
-            flex: 1,
-            type: 'date',
-            headerAlign: 'center',
-            align: 'center',
-            valueGetter: (params) => params.row.lote.dataValidade,
-            valueFormatter: (value: string) => {
-                if (!value) return '';
-
-                return dayjs(value).format('DD/MM/YYYY');
-            },
-        }, */
         {
             field: 'actions',
             headerName: 'Ações',
@@ -116,7 +119,7 @@ export const useItem = () => {
             headerAlign: 'center',
             sortable: false,
             filterable: false,
-            renderCell: (params: GridRenderCellParams) => ActionButtons({
+            renderCell: (params: GridRenderCellParams<IItem>) => ActionButtons({
                 params,
                 onEdit: handleEditItem,
                 onDelete: () => {

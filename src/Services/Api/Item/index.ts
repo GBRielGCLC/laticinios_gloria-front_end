@@ -7,7 +7,6 @@ export interface IItem {
     id: any;
     produtoId: any;
     loteId: any;
-    preco: number;
     unidadeMedida: string;
     produto: IProduto;
     lote: ILote;
@@ -18,6 +17,19 @@ export interface IItemPOST {
     produtoId: any;
     loteId: any;
     unidadeMedida: number;
+}
+
+export interface IItemVendaPOST {
+    itemId: number;
+    quantidade: number;
+}
+
+export interface IVendaPOST {
+    itens: IItemVendaPOST[];
+    dataVenda: string;
+    valorTotal: number;
+    formaPagamento: number;
+    observacoes?: string;
 }
 
 const ENTIDADE_API = "Item";
@@ -37,7 +49,7 @@ export interface IFiltroItem {
 
 const listarItens = async (queryParams?: IListarItensProps): Promise<IItemGET | Error> => {
     try {
-        let mergedObj = {...queryParams?.pagination, ...queryParams?.filtros};
+        let mergedObj = { ...queryParams?.pagination, ...queryParams?.filtros };
         let queryString = mergedObj ? queryToString(mergedObj) : "";
 
         const { data } = await Api.get(ENTIDADE_API + queryString);
@@ -58,18 +70,18 @@ const cadastrarItem = async (item: IItemPOST): Promise<void | Error> => {
 
 const editarItem = async (id: any, item: IItemPOST): Promise<void | Error> => {
     try {
-        await Api.put(`${ENTIDADE_API}/${id}`, item); 
+        await Api.put(`${ENTIDADE_API}/${id}`, item);
     } catch (error: any) {
         return error;
     }
 };
 
 const excluirItem = async (id: any): Promise<void | Error> => {
-  try {
-    await Api.delete(`${ENTIDADE_API}/${id}`);
-  } catch (error: any) {
-    return error;
-  }
+    try {
+        await Api.delete(`${ENTIDADE_API}/${id}`);
+    } catch (error: any) {
+        return error;
+    }
 };
 
 export const ItemService = {
