@@ -1,84 +1,92 @@
-import { useCallback, useEffect, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import * as yup from "yup";
-import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from "dayjs";
-import axios from "axios";
-import { ItemService } from "../../Services/Api/Item";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { IItem, IItemVendaPOST, ItemService, IVendaPOST } from "../../Services/Api/Item";
+import { yup } from "../../Yup";
+import { toast } from "react-toastify";
 
-export interface IVendaPOST {
-    itemId: number;
-    quantidade: number;
-    dataVenda: string;
-    valorTotal: number;
-    formaPagamento: number;
-    observacoes?: string;
+// Tipagem para auxiliar na lógica interna do formulário
+interface ItemFormData {
+    itemId: number | undefined;
+    quantidade: number | undefined;
 }
 
 export function useFormVenda() {
-    const [itens, setItens] = useState<any[]>([]);
+    const [itens, setItens] = useState<IItem[]>([]);
+    const [carrinho, setCarrinho] = useState<IItemVendaPOST[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // ⬇️ SCHEMA
-    const schema = yup.object({
+    // FORM PARA ADICIONAR ITEM
+    const schema = yup.object<ItemFormData>({
         itemId: yup.number().required("Selecione um item"),
-        quantidade: yup.number().required("Informe a quantidade").min(1),
-        formaPagamento: yup.number().required("Forma de pagamento é obrigatória"),
-        observacoes: yup.string().nullable(),
+        quantidade: yup
+            .number()
+            .required("Informe a quantidade")
+            .min(1, "Quantidade mínima é 1")
+            .test("estoque", "Quantidade maior que o estoque", function (value) {
+                const selected = itens.find(i => i.id === this.parent.itemId);
+                if (!selected || !value) return true;
+
+                const quantidadeAtualNoCarrinho = carrinho
+                    .filter(c => c.itemId === this.parent.itemId)
+                    .reduce((acc, curr) => acc + curr.quantidade, 0);
+
+                const quantidadeTotalDesejada = value + quantidadeAtualNoCarrinho;
+
+                return quantidadeTotalDesejada <= selected.lote.quantidade;
+            })
     });
 
-    // ⬇️ FORM
-    const {
-        control,
-        handleSubmit,
-        watch,
-        formState: { errors },
-        reset
-    } = useForm<IVendaPOST>({
-        // resolver: yupResolver(schema),
+    const { control, watch, handleSubmit, reset, formState: { errors } } = useForm<ItemFormData>({
+        // @ts-expect-error
+        resolver: yupResolver(schema),
         defaultValues: {
             itemId: undefined,
             quantidade: undefined,
-            formaPagamento: 1,
-            observacoes: "",
-        },
+        }
     });
 
-    // ⬇️ CAMPOS OBSERVADOS
     const itemId = watch("itemId");
     const quantidade = watch("quantidade");
 
-    const selectedItem = itens.find((i) => i.id === itemId);
-
-    const valorTotal =
-        selectedItem && quantidade
-            ? quantidade * selectedItem.preco
-            : 0;
-
-    // ⬇️ BUSCAR ITENS
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const { data } = await axios.get("/item");
-                setItens(data);
-            } catch {
-                toast.error("Erro ao carregar itens");
-            }
+        if (itemId !== undefined) {
+            reset({ itemId: itemId, quantidade: undefined });
+        } else {
+            reset({ itemId: undefined, quantidade: undefined });
         }
-        // fetchData();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [itemId]);
+
+    const selectedItem = useMemo(() => {
+        return itens.find(i => i.id === itemId);
+    }, [itemId, itens]);
+
+    const valorItem = useMemo(() => {
+        if (!selectedItem) return 0;
+        return selectedItem.produto.precoUnitario * (Number(quantidade) || 0);
+    }, [selectedItem, quantidade]);
+
+    // Função auxiliar para calcular o total geral (simplifica o código)
+    const calcularValorTotal = useCallback((currentCarrinho: IItemVendaPOST[]) => {
+        return currentCarrinho.reduce((acc, itemCar) => {
+            const itemCompleto = itens.find(i => i.id === itemCar.itemId);
+            if (!itemCompleto) return acc;
+            return acc + itemCompleto.produto.precoUnitario * itemCar.quantidade;
+        }, 0);
+    }, [itens]);
+
+    const valorTotal = useMemo(() => calcularValorTotal(carrinho), [carrinho, calcularValorTotal]);
 
     const getDadosSelects = useCallback(() => {
+        // ... (lógica de carregamento de itens permanece a mesma)
         ItemService.listarItens().then((result) => {
-
             if (result instanceof Error) {
                 setItens([]);
-
                 toast.error(result.message);
                 return;
             }
-
             setItens(result.dados);
         });
     }, []);
@@ -87,36 +95,101 @@ export function useFormVenda() {
         getDadosSelects();
     }, [getDadosSelects]);
 
-    // ⬇️ SUBMIT
-    const onSubmit: SubmitHandler<IVendaPOST> = async (formData) => {
+    // ADICIONAR ITEM AO CARRINHO (Lógica alterada para agrupar)
+    const adicionarAoCarrinho = useCallback((data: ItemFormData) => {
+        if (!data.itemId || !data.quantidade) return;
+
+        setCarrinho(prev => {
+            const itemIndex = prev.findIndex(item => item.itemId === data.itemId);
+
+            if (itemIndex !== -1) {
+                // Item já existe: atualiza a quantidade
+                const newCarrinho = [...prev];
+                newCarrinho[itemIndex] = {
+                    ...newCarrinho[itemIndex],
+                    quantidade: newCarrinho[itemIndex].quantidade + Number(data.quantidade),
+                };
+                return newCarrinho;
+            } else {
+                // Item novo: adiciona
+                return [
+                    ...prev,
+                    {
+                        itemId: data.itemId as number,
+                        quantidade: Number(data.quantidade),
+                    }
+                ];
+            }
+        });
+
+        reset({ itemId: undefined, quantidade: undefined });
+    }, [reset]);
+
+    // NOVA FUNÇÃO: Editar a quantidade de um item no carrinho
+    const editarQuantidadeItem = useCallback((itemId: number, novaQuantidade: number) => {
+        // 1. Encontra o item original (para pegar o estoque)
+        const itemCompleto = itens.find(i => i.id === itemId);
+
+        if (!itemCompleto) {
+            toast.error("Item não encontrado para edição.");
+            return;
+        }
+
+        // 2. Valida se a nova quantidade não excede o estoque
+        if (novaQuantidade <= 0) {
+            toast.error("A quantidade mínima deve ser 1. Use o botão de lixeira para remover.");
+            return;
+        }
+        if (novaQuantidade > itemCompleto.lote.quantidade) {
+            toast.error(`Quantidade excede o estoque disponível (${itemCompleto.lote.quantidade}).`);
+            return;
+        }
+
+        // 3. Atualiza o carrinho
+        setCarrinho(prev => {
+            const itemIndex = prev.findIndex(item => item.itemId === itemId);
+            if (itemIndex === -1) return prev;
+
+            const newCarrinho = [...prev];
+            newCarrinho[itemIndex] = {
+                ...newCarrinho[itemIndex],
+                quantidade: novaQuantidade,
+            };
+            return newCarrinho;
+        });
+    }, [itens]);
+
+
+    const removerItem = useCallback((itemId: number) => {
+        // Agora remove o item pelo itemId, já que eles estão agrupados
+        setCarrinho(prev => prev.filter(item => item.itemId !== itemId));
+    }, []);
+
+
+    const registrarVenda = async (dadosExtras: { formaPagamento: number; observacoes?: string }) => {
         const payload: IVendaPOST = {
-            ...formData,
+            itens: carrinho,
             dataVenda: dayjs().toISOString(),
             valorTotal,
+            formaPagamento: dadosExtras.formaPagamento,
+            observacoes: dadosExtras.observacoes
         };
 
-        try {
-            setLoading(true);
-
-            await axios.post("/venda", payload);
-
-            toast.success("Venda registrada com sucesso!");
-
-            reset();
-        } catch (err) {
-            toast.error("Erro ao registrar venda");
-        } finally {
-            setLoading(false);
-        }
+        console.log("🚀 Venda enviada:", payload);
     };
 
     return {
         itens,
-        loading,
         control,
         errors,
+        carrinho,
         selectedItem,
+        valorItem,
         valorTotal,
-        handleSubmit: handleSubmit(onSubmit),
+        adicionarAoCarrinho,
+        removerItem,
+        editarQuantidadeItem,
+        registrarVenda,
+        watch,
     };
 }
