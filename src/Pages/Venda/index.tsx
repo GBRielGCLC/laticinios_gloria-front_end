@@ -11,7 +11,7 @@ import {
     Grid,
     Divider,
 } from '@mui/material';
-import { ShoppingCart, Delete } from '@mui/icons-material';
+import { ShoppingCart, Delete, AddShoppingCart } from '@mui/icons-material';
 import { Controller, useForm } from "react-hook-form";
 import { FormaPagamentoService } from '../../Services/Utils/FormaPagamento';
 import { Formatters } from '../../Services/Utils/Formatters';
@@ -20,29 +20,24 @@ import { IItem } from '../../Services/Api/Item';
 
 export function Venda() {
     const {
-        itens,
         control,
         errors,
-        carrinho,
+        handleSubmit,
+
+        controlFinal,
+        handleSubmitFinal,
+
+        itens,
         selectedItem,
+
+        carrinho,
         valorItem,
         valorTotal,
-        adicionarAoCarrinho,
+
         removerItem,
         editarQuantidadeItem,
         registrarVenda,
-        watch,
     } = useFormVenda();
-
-    const quantidade = watch("quantidade");
-
-    // FORM FINAL (PGTO + OBS)
-    const { control: controlFinal, handleSubmit: handleSubmitFinal } = useForm({
-        defaultValues: {
-            formaPagamento: 1,
-            observacoes: "",
-        }
-    });
 
     return (
         <Card sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', maxWidth: 900, mx: "auto" }}>
@@ -61,10 +56,10 @@ export function Venda() {
                     Adicionar Item ao Carrinho
                 </Typography>
 
-                <Grid container spacing={2}>
+                <Grid container spacing={2} component='form' noValidate onSubmit={handleSubmit}>
 
                     {/* ITEM */}
-                    <Grid size={{ xs: 12, md: 6 }}> {/* Ajuste: usando size={{ ... }} */}
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Controller
                             name="itemId"
                             control={control}
@@ -77,6 +72,7 @@ export function Venda() {
                                         `${i.produto.nome} — ${Formatters.formatadorMonetario(i.produto.precoUnitario)}`
                                     }
                                     onChange={(_, value) => field.onChange(value?.id)}
+                                    value={selectedItem ?? null}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -92,7 +88,7 @@ export function Venda() {
                     </Grid>
 
                     {/* QUANTIDADE */}
-                    <Grid size={{ xs: 12, md: 6 }}> {/* Ajuste: usando size={{ ... }} */}
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Controller
                             name="quantidade"
                             control={control}
@@ -125,7 +121,7 @@ export function Venda() {
                                     </Typography>
                                     <Typography
                                         variant="body2"
-                                        color={(quantidade && selectedItem.lote.quantidade < quantidade + (carrinho.find(c => c.itemId === selectedItem.id)?.quantidade || 0)) ? "error" : "text.primary"}
+                                        color={errors.quantidade?.type === "estoque" ? "error" : "text.primary"}
                                     >
                                         Estoque total: <strong> {selectedItem.lote.quantidade} </strong>
                                     </Typography>
@@ -147,20 +143,20 @@ export function Venda() {
                                 color: 'info.contrastText'
                             }}>
                                 <Typography variant="body2">
-                                    Subtotal (A Adicionar): **{Formatters.formatadorMonetario(valorItem)}**
+                                    Subtotal (A Adicionar): <strong>{Formatters.formatadorMonetario(valorItem)}</strong>
                                 </Typography>
                             </Paper>
                         </Grid>
                     )}
 
                     {/* BOTÃO ADICIONAR */}
-                    <Grid size={{ xs: 12 }}> {/* Ajuste: usando size={{ ... }} */}
+                    <Grid size={{ xs: 12 }}>
                         <Button
+                            type='submit'
                             variant="contained"
-                            color="secondary"
+                            color="info"
                             fullWidth
-                            startIcon={<ShoppingCart />}
-                            onClick={control._formState.isSubmitting ? undefined : control.handleSubmit(adicionarAoCarrinho as any)}
+                            startIcon={<AddShoppingCart />}
                         >
                             Adicionar ao Carrinho
                         </Button>
@@ -215,7 +211,7 @@ export function Venda() {
                                         fullWidth
                                     />
                                     <Typography variant="subtitle2">
-                                        Subtotal: **{Formatters.formatadorMonetario(subtotal)}**
+                                        Subtotal: <strong> {Formatters.formatadorMonetario(subtotal)} </strong>
                                     </Typography>
                                 </Grid>
 
@@ -260,11 +256,11 @@ export function Venda() {
 
                 {/* FORM FINAL (PGTO + OBS) */}
                 {carrinho.length > 0 && (
-                    <form onSubmit={handleSubmitFinal(registrarVenda)} noValidate>
+                    <form onSubmit={handleSubmitFinal} noValidate>
                         <Grid container spacing={2}>
 
                             {/* FORMA DE PAGAMENTO */}
-                            <Grid size={{ xs: 12, md: 6 }}> {/* Ajuste: usando size={{ ... }} */}
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Controller
                                     name="formaPagamento"
                                     control={controlFinal}
@@ -285,7 +281,7 @@ export function Venda() {
                             </Grid>
 
                             {/* OBSERVAÇÕES */}
-                            <Grid size={{ xs: 12, md: 6 }}> {/* Ajuste: usando size={{ ... }} */}
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Controller
                                     name="observacoes"
                                     control={controlFinal}
@@ -302,7 +298,7 @@ export function Venda() {
                             </Grid>
 
                             {/* SUBMIT VENDA */}
-                            <Grid size={{ xs: 12 }}> {/* Ajuste: usando size={{ ... }} */}
+                            <Grid size={{ xs: 12 }}>
                                 <Button
                                     type="submit"
                                     variant="contained"

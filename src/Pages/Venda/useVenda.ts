@@ -1,15 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { IItem, IItemVendaPOST, ItemService, IVendaPOST } from "../../Services/Api/Item";
 import { yup } from "../../Yup";
 import { toast } from "react-toastify";
 
 // Tipagem para auxiliar na lógica interna do formulário
 interface ItemFormData {
-    itemId: number | undefined;
-    quantidade: number | undefined;
+    itemId: number;
+    quantidade: number;
 }
 
 export function useFormVenda() {
@@ -18,31 +18,36 @@ export function useFormVenda() {
     const [loading, setLoading] = useState(false);
 
     // FORM PARA ADICIONAR ITEM
-    const schema = yup.object<ItemFormData>({
-        itemId: yup.number().required("Selecione um item"),
+    const schema: yup.ObjectSchema<ItemFormData> = yup.object({
+        itemId: yup
+            .number()
+            .required("Selecione um item"),
+
         quantidade: yup
             .number()
             .required("Informe a quantidade")
             .min(1, "Quantidade mínima é 1")
-            .test("estoque", "Quantidade maior que o estoque", function (value) {
-                const selected = itens.find(i => i.id === this.parent.itemId);
-                if (!selected || !value) return true;
+            .test(
+                "estoque",
+                "Quantidade maior que o estoque",
+                function (value) {
+                    const parent = this.parent as ItemFormData;
+                    const selected = itens.find(i => i.id === parent.itemId);
+                    if (!selected || !value) return true;
 
-                const quantidadeAtualNoCarrinho = carrinho
-                    .filter(c => c.itemId === this.parent.itemId)
-                    .reduce((acc, curr) => acc + curr.quantidade, 0);
+                    const qCarrinho = carrinho
+                        .filter(c => c.itemId === parent.itemId)
+                        .reduce((acc, c) => acc + c.quantidade, 0);
 
-                const quantidadeTotalDesejada = value + quantidadeAtualNoCarrinho;
-
-                return quantidadeTotalDesejada <= selected.lote.quantidade;
-            })
-    });
+                    return value + qCarrinho <= selected.lote.quantidade;
+                }
+            )
+    }).required();
 
     const { control, watch, handleSubmit, reset, formState: { errors } } = useForm<ItemFormData>({
-        // @ts-expect-error
         resolver: yupResolver(schema),
         defaultValues: {
-            itemId: undefined,
+            itemId: null as any,
             quantidade: undefined,
         }
     });
@@ -50,14 +55,13 @@ export function useFormVenda() {
     const itemId = watch("itemId");
     const quantidade = watch("quantidade");
 
-    useEffect(() => {
-        if (itemId !== undefined) {
-            reset({ itemId: itemId, quantidade: undefined });
-        } else {
-            reset({ itemId: undefined, quantidade: undefined });
+    // FORM FINAL (PGTO + OBS)
+    const { control: controlFinal, handleSubmit: handleSubmitFinal } = useForm({
+        defaultValues: {
+            formaPagamento: 1,
+            observacoes: "",
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [itemId]);
+    });
 
     const selectedItem = useMemo(() => {
         return itens.find(i => i.id === itemId);
@@ -68,7 +72,6 @@ export function useFormVenda() {
         return selectedItem.produto.precoUnitario * (Number(quantidade) || 0);
     }, [selectedItem, quantidade]);
 
-    // Função auxiliar para calcular o total geral (simplifica o código)
     const calcularValorTotal = useCallback((currentCarrinho: IItemVendaPOST[]) => {
         return currentCarrinho.reduce((acc, itemCar) => {
             const itemCompleto = itens.find(i => i.id === itemCar.itemId);
@@ -80,7 +83,6 @@ export function useFormVenda() {
     const valorTotal = useMemo(() => calcularValorTotal(carrinho), [carrinho, calcularValorTotal]);
 
     const getDadosSelects = useCallback(() => {
-        // ... (lógica de carregamento de itens permanece a mesma)
         ItemService.listarItens().then((result) => {
             if (result instanceof Error) {
                 setItens([]);
@@ -95,8 +97,7 @@ export function useFormVenda() {
         getDadosSelects();
     }, [getDadosSelects]);
 
-    // ADICIONAR ITEM AO CARRINHO (Lógica alterada para agrupar)
-    const adicionarAoCarrinho = useCallback((data: ItemFormData) => {
+    const adicionarAoCarrinho: SubmitHandler<ItemFormData> = useCallback((data) => {
         if (!data.itemId || !data.quantidade) return;
 
         setCarrinho(prev => {
@@ -122,10 +123,9 @@ export function useFormVenda() {
             }
         });
 
-        reset({ itemId: undefined, quantidade: undefined });
+        reset();
     }, [reset]);
 
-    // NOVA FUNÇÃO: Editar a quantidade de um item no carrinho
     const editarQuantidadeItem = useCallback((itemId: number, novaQuantidade: number) => {
         // 1. Encontra o item original (para pegar o estoque)
         const itemCompleto = itens.find(i => i.id === itemId);
@@ -141,7 +141,7 @@ export function useFormVenda() {
             return;
         }
         if (novaQuantidade > itemCompleto.lote.quantidade) {
-            toast.error(`Quantidade excede o estoque disponível (${itemCompleto.lote.quantidade}).`);
+            toast.warn(`Quantidade excede o estoque disponível (${itemCompleto.lote.quantidade}).`);
             return;
         }
 
@@ -161,7 +161,6 @@ export function useFormVenda() {
 
 
     const removerItem = useCallback((itemId: number) => {
-        // Agora remove o item pelo itemId, já que eles estão agrupados
         setCarrinho(prev => prev.filter(item => item.itemId !== itemId));
     }, []);
 
@@ -179,17 +178,22 @@ export function useFormVenda() {
     };
 
     return {
-        itens,
         control,
         errors,
-        carrinho,
+        handleSubmit: handleSubmit(adicionarAoCarrinho),
+
+        controlFinal,
+        handleSubmitFinal: handleSubmitFinal(registrarVenda),
+
+        itens,
         selectedItem,
+
+        carrinho,
         valorItem,
         valorTotal,
-        adicionarAoCarrinho,
+
         removerItem,
         editarQuantidadeItem,
         registrarVenda,
-        watch,
     };
 }
