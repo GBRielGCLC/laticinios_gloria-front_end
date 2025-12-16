@@ -127,7 +127,7 @@ export function useFormVenda() {
     }, [reset]);
 
     const editarQuantidadeItem = useCallback((itemId: number, novaQuantidade: number) => {
-        // 1. Encontra o item original (para pegar o estoque)
+        // Encontra o item original (para pegar o estoque)
         const itemCompleto = itens.find(i => i.id === itemId);
 
         if (!itemCompleto) {
@@ -135,9 +135,9 @@ export function useFormVenda() {
             return;
         }
 
-        // 2. Valida se a nova quantidade não excede o estoque
+        // Valida se a nova quantidade não excede o estoque
         if (novaQuantidade <= 0) {
-            toast.error("A quantidade mínima deve ser 1. Use o botão de lixeira para remover.");
+            toast.warning("A quantidade mínima deve ser 1. Use o botão de lixeira para remover.");
             return;
         }
         if (novaQuantidade > itemCompleto.lote.quantidade) {
@@ -145,7 +145,7 @@ export function useFormVenda() {
             return;
         }
 
-        // 3. Atualiza o carrinho
+        // Atualiza o carrinho
         setCarrinho(prev => {
             const itemIndex = prev.findIndex(item => item.itemId === itemId);
             if (itemIndex === -1) return prev;
@@ -194,6 +194,5 @@ export function useFormVenda() {
 
         removerItem,
         editarQuantidadeItem,
-        registrarVenda,
     };
 }
