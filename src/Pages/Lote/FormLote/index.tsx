@@ -7,6 +7,7 @@ import {
   Button,
   CircularProgress,
   Stack,
+  IconButton,
 } from "@mui/material";
 import { ILote } from "../../../Services/Api/Lote";
 
@@ -14,6 +15,7 @@ import { useFormLote } from "./useFormLote";
 import { Controller } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers";
 import { InputMonetario } from "../../../Components";
+import { Close } from "@mui/icons-material";
 
 interface FormLoteProps {
   open: boolean;
@@ -35,8 +37,16 @@ export function FormLote(props: FormLoteProps) {
 
   return (
     <Dialog open={props.open} onClose={props.onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         {isEditing ? "Editar Lote" : "Adicionar Novo Lote"}
+
+        <IconButton
+          onClick={props.onClose}
+          sx={{ ml: 'auto' }}
+          aria-label="Fechar"
+        >
+          <Close />
+        </IconButton>
       </DialogTitle>
 
       <form onSubmit={handleSubmit} noValidate>

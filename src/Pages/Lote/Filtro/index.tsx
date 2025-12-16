@@ -1,8 +1,9 @@
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Stack, TextField } from "@mui/material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Stack, TextField, IconButton } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Controller } from "react-hook-form";
 import { useFiltroLote } from "./useFiltroLote";
 import { IFiltroLote } from "../../../Services/Api/Lote";
+import { Close } from "@mui/icons-material";
 
 interface FiltroLoteProps {
   open: boolean;
@@ -22,7 +23,17 @@ export function FiltroLote({ open, onClose, onFiltrar }: FiltroLoteProps) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Filtrar Lotes</DialogTitle>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        Filtrar Lotes
+
+        <IconButton
+          onClick={onClose}
+          sx={{ ml: 'auto' }}
+          aria-label="Fechar"
+        >
+          <Close />
+        </IconButton>
+      </DialogTitle>
 
       <form onSubmit={handleSubmit}>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

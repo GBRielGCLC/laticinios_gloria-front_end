@@ -6,10 +6,12 @@ import {
     DialogActions,
     TextField,
     FormControlLabel,
-    Switch
+    Switch,
+    IconButton
 } from "@mui/material";
 import { useFiltroProduto } from "./useFiltroProduto";
 import { Controller } from "react-hook-form";
+import { Close } from "@mui/icons-material";
 
 interface FiltroProdutoProps {
     open: boolean;
@@ -28,7 +30,17 @@ export function FiltroProduto({ open, onClose, onFiltrar }: FiltroProdutoProps) 
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Filtrar Produtos</DialogTitle>
+            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                Filtrar Produtos
+
+                <IconButton
+                    onClick={onClose}
+                    sx={{ ml: 'auto' }}
+                    aria-label="Fechar"
+                >
+                    <Close />
+                </IconButton>
+            </DialogTitle>
 
             <form onSubmit={handleSubmit}>
                 <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 3 }}>

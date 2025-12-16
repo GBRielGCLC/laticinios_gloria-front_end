@@ -8,6 +8,7 @@ import {
   CircularProgress,
   MenuItem,
   Autocomplete,
+  IconButton,
 } from "@mui/material";
 import { IItem } from "../../../Services/Api/Item";
 import { useFormItem } from "./useFormItem";
@@ -15,6 +16,7 @@ import { Controller } from "react-hook-form";
 import { UnidadeMedidaService } from "../../../Services";
 import { IProduto } from "../../../Services/Api/Produto";
 import { ILote } from "../../../Services/Api/Lote";
+import { Close } from "@mui/icons-material";
 
 interface FormItemProps {
   open: boolean;
@@ -36,8 +38,16 @@ export function FormItem(props: FormItemProps) {
 
   return (
     <Dialog open={props.open} onClose={props.onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         {isEditing ? "Editar Item de Lote" : "Adicionar Novo Item de Lote"}
+
+        <IconButton
+          onClick={props.onClose}
+          sx={{ ml: 'auto' }}
+          aria-label="Fechar"
+        >
+          <Close />
+        </IconButton>
       </DialogTitle>
 
       <form onSubmit={handleSubmit} noValidate>

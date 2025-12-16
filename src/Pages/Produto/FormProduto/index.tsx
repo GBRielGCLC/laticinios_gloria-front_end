@@ -6,12 +6,14 @@ import {
   TextField,
   Button,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import { IProduto } from "../../../Services/Api/Produto";
 
 import { useFormProduto } from "./useFormProduto";
 import { InputMonetario } from "../../../Components";
 import { Controller } from "react-hook-form";
+import { Close } from "@mui/icons-material";
 
 interface FormProdutoProps {
   open: boolean;
@@ -33,8 +35,16 @@ export function FormProduto(props: FormProdutoProps) {
 
   return (
     <Dialog open={props.open} onClose={props.onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         {isEditing ? "Editar Produto" : "Adicionar Novo Produto"}
+
+        <IconButton
+          onClick={props.onClose}
+          sx={{ ml: 'auto' }}
+          aria-label="Fechar"
+        >
+          <Close />
+        </IconButton>
       </DialogTitle>
 
       <form onSubmit={handleSubmit} noValidate>
