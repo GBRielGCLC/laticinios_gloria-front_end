@@ -6,105 +6,130 @@ import {
     Grid,
     Typography,
     Paper,
+    CircularProgress,
 } from "@mui/material";
 import { AddShoppingCart, PointOfSale } from "@mui/icons-material";
 import { useState } from "react";
 import { FormVenda } from "./FormVenda";
+import { Formatters } from "../../Services/Utils/Formatters";
+import { useVenda } from "./useVenda";
+import { CardVenda } from "./CardVenda";
 
 export function Venda() {
     const [openVenda, setOpenVenda] = useState(false);
 
+    const {
+        vendas,
+        isLoadingVenda,
+    } = useVenda();
+
     return (
         <Box sx={{ p: 3 }}>
 
-            {/* HEADER */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 3,
-                }}
-            >
-                <Box>
-                    <Typography variant="h5" fontWeight="bold">
-                        Vendas
-                    </Typography>
-                    <Typography color="text.secondary">
-                        Gerencie e registre as vendas realizadas
-                    </Typography>
-                </Box>
+            {/* AÇÕES + KPIs */}
+            <Grid container spacing={2} sx={{ mb: 3 }} alignItems="center">
 
-                <Button
-                    variant="contained"
-                    startIcon={<AddShoppingCart />}
-                    onClick={() => setOpenVenda(true)}
-                >
-                    Nova Venda
-                </Button>
-            </Box>
-
-            {/* KPIs */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+                {/* TOTAL VENDIDO */}
                 <Grid size={{ xs: 12, sm: 4 }}>
                     <Paper sx={{ p: 2 }}>
                         <Typography variant="body2" color="text.secondary">
-                            Total vendido hoje
+                            Total vendido
                         </Typography>
                         <Typography variant="h6">
-                            R$ 0,00
+                            {Formatters.formatadorMonetario(0)}
                         </Typography>
                     </Paper>
                 </Grid>
 
+                {/* QUANTIDADE DE VENDAS */}
                 <Grid size={{ xs: 12, sm: 4 }}>
                     <Paper sx={{ p: 2 }}>
                         <Typography variant="body2" color="text.secondary">
                             Vendas realizadas
                         </Typography>
                         <Typography variant="h6">
-                            0
+                            {vendas.dados.length}
                         </Typography>
                     </Paper>
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 4 }}>
-                    <Paper sx={{ p: 2 }}>
-                        <Typography variant="body2" color="text.secondary">
-                            Ticket médio
-                        </Typography>
-                        <Typography variant="h6">
-                            R$ 0,00
-                        </Typography>
-                    </Paper>
+                {/* BOTÃO NOVA VENDA */}
+                <Grid
+                    size={{ xs: 12, sm: 4 }}
+                    sx={{
+                        display: "flex",
+                        justifyContent: { xs: "stretch", sm: "flex-end" },
+                        alignItems: "center",
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        startIcon={<AddShoppingCart />}
+                        onClick={() => setOpenVenda(true)}
+                        fullWidth={false}
+                    >
+                        Nova Venda
+                    </Button>
                 </Grid>
             </Grid>
 
-            {/* LISTA DE VENDAS (FUTURO) */}
-            <Card>
+            {/* LISTA DE VENDAS */}
+            <Card sx={{ width: "100%" }}>
                 <CardContent>
-                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="subtitle1"
+                        fontWeight="bold"
+                        sx={{ mb: 2 }}
+                    >
                         Histórico de Vendas
                     </Typography>
 
-                    {/* ESTADO VAZIO */}
-                    <Box
-                        sx={{
-                            py: 6,
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            color: "text.secondary",
-                        }}
-                    >
-                        <PointOfSale sx={{ fontSize: 48, mb: 1 }} />
-                        <Typography>
-                            Nenhuma venda registrada ainda
-                        </Typography>
-                        <Typography variant="body2">
-                            Clique em <strong>Nova Venda</strong> para começar
-                        </Typography>
-                    </Box>
+                    {isLoadingVenda ? (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                py: 4,
+                            }}
+                        >
+                            <CircularProgress />
+                        </Box>
+                    ) : vendas.dados.length === 0 ? (
+                        <Box
+                            sx={{
+                                py: 6,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                color: "text.secondary",
+                            }}
+                        >
+                            <PointOfSale sx={{ fontSize: 48, mb: 1 }} />
+                            <Typography>
+                                Nenhuma venda registrada ainda
+                            </Typography>
+                            <Typography variant="body2">
+                                Clique em <strong>Nova Venda</strong> para começar
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <Grid container spacing={2}>
+                            {vendas.dados.map(venda => (
+                                <Grid
+                                    key={venda.id}
+                                    size={{
+                                        xs: 12,
+                                        sm: 6,
+                                        md: 4,
+                                        lg: 3,
+                                        xl: 2,
+                                    }}
+                                >
+                                    <CardVenda venda={venda} />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    )}
                 </CardContent>
             </Card>
 
