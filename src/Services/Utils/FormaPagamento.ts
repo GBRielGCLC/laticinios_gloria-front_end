@@ -5,9 +5,20 @@
  * - id: identificador numérico único
  * - nome: descrição de exibição
  */
+import { SvgIconComponent } from "@mui/icons-material";
+import {
+    AttachMoney,
+    CreditCard,
+    Payments,
+    Pix,
+} from "@mui/icons-material";
+import { SvgIconOwnProps } from "@mui/material";
+
 export interface IFormaPagamento {
     id: number;
     nome: string;
+    icon: SvgIconComponent;
+    color?: SvgIconOwnProps["color"];
 }
 
 /**
@@ -16,11 +27,32 @@ export interface IFormaPagamento {
  * Esta lista serve tanto para exibição em selects,
  * quanto para conversão de valores vindos da API.
  */
+
 const FormaPagamento: IFormaPagamento[] = [
-    { id: 1, nome: "Dinheiro" },
-    { id: 2, nome: "Cartão de Crédito" },
-    { id: 3, nome: "Cartão de Débito" },
-    { id: 4, nome: "Pix" },
+    {
+        id: 1,
+        nome: "Dinheiro",
+        icon: AttachMoney,
+        color: "success",
+    },
+    {
+        id: 2,
+        nome: "Cartão de Crédito",
+        icon: CreditCard,
+        color: "warning",
+    },
+    {
+        id: 3,
+        nome: "Cartão de Débito",
+        icon: Payments,
+        color: "warning",
+    },
+    {
+        id: 4,
+        nome: "Pix",
+        icon: Pix,
+        color: "info",
+    },
 ];
 
 /**
