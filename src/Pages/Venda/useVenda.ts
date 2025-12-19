@@ -3,8 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { IListarVendasProps, VendaService, IVendaGET } from "../../Services/Api/Venda";
 import { defaultPaginationsData } from "../../Services/Api/Utils";
+import { useConfirm } from "../../Contexts";
 
 export const useVenda = () => {
+    const confirmDialog = useConfirm();
+
     const [isLoadingVenda, setIsLoadingVenda] = useState(false);
 
     const [vendas, setVendas] = useState<IVendaGET>({
@@ -64,6 +67,29 @@ export const useVenda = () => {
         // listarVendas();
     }, []);
 
+    const handleDelete = (id: number) => {
+        confirmDialog({
+            titulo: 'Excluir venda',
+            conteudo: 'Tem certeza que deseja excluir esta venda?',
+            onConfirm: ({ close, setLoading }) => VendaService.excluirVenda(id).then((result) => {
+                setLoading(false);
+
+                if (result instanceof Error) {
+                    toast.error(result.message);
+                    return;
+                }
+
+                toast.success("Venda excluida com sucesso!");
+                close();
+
+                setVendas((prevVendas) => ({
+                    ...prevVendas,
+                    dados: prevVendas.dados.filter((venda) => venda.id !== venda.id)
+                }));
+            })
+        })
+    };
+
     return {
         vendas,
         setVendas,
@@ -71,5 +97,7 @@ export const useVenda = () => {
         pagination,
         setPagination,
         listarVendas,
+
+        handleDelete
     };
 };

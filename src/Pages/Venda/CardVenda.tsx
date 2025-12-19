@@ -12,7 +12,7 @@ import {
 import {
     ExpandMore,
     Delete,
-    ReceiptLong,
+    Edit,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { Formatters } from "../../Services/Utils/Formatters";
@@ -22,14 +22,14 @@ import { FormaPagamentoService } from "../../Services/Utils/FormaPagamento";
 interface CardVendaProps {
     venda: IVenda;
     onDelete?: (id: number) => void;
+    onEdit?: (venda: IVenda) => void;
 }
 
-export function CardVenda({ venda, onDelete }: CardVendaProps) {
+export function CardVenda({ venda, onDelete, onEdit }: CardVendaProps) {
     const [open, setOpen] = useState(false);
 
     const formaPagamento = FormaPagamentoService.findByNome(venda.formaPagamento);
     const Icon = formaPagamento?.icon;
-    const chipColor = formaPagamento?.color ?? "default";
 
     return (
         <Card
@@ -104,29 +104,45 @@ export function CardVenda({ venda, onDelete }: CardVendaProps) {
                     justifyContent="space-between"
                     alignItems="center"
                 >
-                    {venda.itens.length > 0 && (
-                        <IconButton
-                            onClick={() => setOpen(prev => !prev)}
-                            aria-label="expandir detalhes"
-                        >
-                            <ExpandMore
-                                sx={{
-                                    transform: open ? "rotate(180deg)" : "rotate(0deg)",
-                                    transition: "0.2s",
-                                }}
-                            />
-                        </IconButton>
-                    )}
+                    <Box>
+                        {venda.itens.length > 0 && (
+                            <IconButton
+                                onClick={() => setOpen(prev => !prev)}
+                                aria-label="expandir detalhes"
+                            >
+                                <ExpandMore
+                                    sx={{
+                                        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+                                        transition: "0.2s",
+                                    }}
+                                />
+                            </IconButton>
+                        )}
+                    </Box>
 
-                    {onDelete && (
-                        <IconButton
-                            color="error"
-                            onClick={() => onDelete(venda.id)}
-                            aria-label="excluir venda"
-                        >
-                            <Delete />
-                        </IconButton>
-                    )}
+                    <Box display="flex" gap={1}>
+                        {onEdit && (
+                            <IconButton
+                                onClick={() => onEdit(venda)}
+                                aria-label="editar"
+                                color="primary"
+                                size="small"
+                            >
+                                <Edit />
+                            </IconButton>
+                        )}
+
+                        {onDelete && (
+                            <IconButton
+                                color="error"
+                                onClick={() => onDelete(venda.id)}
+                                aria-label="excluir venda"
+                                size="small"
+                            >
+                                <Delete />
+                            </IconButton>
+                        )}
+                    </Box>
                 </Box>
 
                 {/* DETALHES (COLLAPSE) */}

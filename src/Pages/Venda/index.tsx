@@ -21,6 +21,8 @@ export function Venda() {
     const {
         vendas,
         isLoadingVenda,
+
+        handleDelete
     } = useVenda();
 
     return (
@@ -125,7 +127,7 @@ export function Venda() {
                                         xl: 2,
                                     }}
                                 >
-                                    <CardVenda venda={venda} />
+                                    <CardVenda venda={venda} onDelete={handleDelete}/>
                                 </Grid>
                             ))}
                         </Grid>
