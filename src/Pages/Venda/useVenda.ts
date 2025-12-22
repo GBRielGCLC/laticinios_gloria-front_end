@@ -1,9 +1,20 @@
-// Hooks/useVenda.ts
 import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { IListarVendasProps, VendaService, IVendaGET } from "../../Services/Api/Venda";
+import {
+    IListarVendasProps,
+    VendaService,
+    IVendaGET,
+} from "../../Services/Api/Venda";
 import { defaultPaginationsData } from "../../Services/Api/Utils";
 import { useConfirm } from "../../Contexts";
+
+export interface IFiltroVendaForm {
+    dataVenda: dayjs.Dayjs | null;
+    formaPagamento: string;
+    observacoes: string;
+}
 
 export const useVenda = () => {
     const confirmDialog = useConfirm();
@@ -36,68 +47,109 @@ export const useVenda = () => {
                 itens: []
             },
         ],
-        totalPaginas: 0,
-        totalRegistros: 0,
+        totalPaginas: 5,
+        totalRegistros: 5,
     });
+
     const [pagination, setPagination] = useState(defaultPaginationsData);
+
+    const form = useForm<IFiltroVendaForm>({
+        defaultValues: {
+            dataVenda: null,
+            formaPagamento: "",
+            observacoes: "",
+        },
+    });
 
     const listarVendas = useCallback((query?: IListarVendasProps) => {
         setIsLoadingVenda(true);
 
         VendaService.listarVendas({
             pagination: query?.pagination ?? pagination,
+            filtros: query?.filtros,
         }).then((result) => {
             setIsLoadingVenda(false);
 
             if (result instanceof Error) {
                 toast.error(result.message);
-                setVendas({
-                    dados: [],
-                    totalPaginas: 0,
-                    totalRegistros: 0
-                });
                 return;
             }
 
-            setVendas(result);
+            result.dados.length > 0 && setVendas(result);
         });
-    }, [pagination]);
+    },
+        [pagination]
+    );
 
-    useEffect(() => {
-        // listarVendas();
-    }, []);
+    const handleBuscar = form.handleSubmit((data) => {
+        listarVendas({
+            filtros: {
+                dataVenda: data.dataVenda
+                    ? data.dataVenda.format("YYYY-MM-DD")
+                    : null,
+                formaPagamento: data.formaPagamento || null,
+                observacoes: data.observacoes || null,
+            },
+            pagination: {
+                ...pagination,
+                pagina: 1,
+            },
+        });
+
+        setPagination(prev => ({
+            ...prev,
+            pagina: 1,
+        }));
+    });
+
+    const handleChangePage = (_: React.ChangeEvent<unknown>, pagina: number) => {
+        const newPagination = {
+            ...pagination,
+            pagina,
+        };
+
+        setPagination(newPagination);
+        listarVendas({ pagination: newPagination });
+    };
 
     const handleDelete = (id: number) => {
         confirmDialog({
-            titulo: 'Excluir venda',
-            conteudo: 'Tem certeza que deseja excluir esta venda?',
-            onConfirm: ({ close, setLoading }) => VendaService.excluirVenda(id).then((result) => {
-                setLoading(false);
+            titulo: "Excluir venda",
+            conteudo: "Tem certeza que deseja excluir esta venda?",
+            onConfirm: ({ close, setLoading }) =>
+                VendaService.excluirVenda(id).then((result) => {
+                    setLoading(false);
 
-                if (result instanceof Error) {
-                    toast.error(result.message);
-                    return;
-                }
+                    if (result instanceof Error) {
+                        toast.error(result.message);
+                        return;
+                    }
 
-                toast.success("Venda excluida com sucesso!");
-                close();
+                    toast.success("Venda excluída com sucesso!");
+                    close();
 
-                setVendas((prevVendas) => ({
-                    ...prevVendas,
-                    dados: prevVendas.dados.filter((venda) => venda.id !== venda.id)
-                }));
-            })
-        })
+                    setVendas(prev => ({
+                        ...prev,
+                        dados: prev.dados.filter(v => v.id !== id),
+                        totalRegistros: prev.totalRegistros - 1,
+                    }));
+                }),
+        });
     };
+
+    useEffect(() => {
+        listarVendas({ pagination });
+    }, []);
 
     return {
         vendas,
-        setVendas,
         isLoadingVenda,
-        pagination,
-        setPagination,
-        listarVendas,
 
-        handleDelete
+        pagination,
+        handleChangePage,
+
+        form,
+        handleBuscar,
+        handleDelete,
     };
 };

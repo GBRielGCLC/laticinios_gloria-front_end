@@ -7,13 +7,23 @@ import {
     Typography,
     Paper,
     CircularProgress,
+    TextField,
+    MenuItem,
+    Pagination,
 } from "@mui/material";
-import { AddShoppingCart, PointOfSale } from "@mui/icons-material";
+import {
+    AddShoppingCart,
+    PointOfSale,
+    Search,
+} from "@mui/icons-material";
 import { useState } from "react";
+import { Controller } from "react-hook-form";
+import { DatePicker } from "@mui/x-date-pickers";
 import { FormVenda } from "./FormVenda";
 import { Formatters } from "../../Services/Utils/Formatters";
 import { useVenda } from "./useVenda";
 import { CardVenda } from "./CardVenda";
+import { FormaPagamentoService } from "../../Services/Utils/FormaPagamento";
 
 export function Venda() {
     const [openVenda, setOpenVenda] = useState(false);
@@ -21,17 +31,19 @@ export function Venda() {
     const {
         vendas,
         isLoadingVenda,
-
-        handleDelete
+        pagination,
+        handleChangePage,
+        handleDelete,
+        form,
+        handleBuscar,
     } = useVenda();
+
+    const { control } = form;
 
     return (
         <Box sx={{ p: 3 }}>
-
-            {/* AÇÕES + KPIs */}
+            {/* KPIs + AÇÕES */}
             <Grid container spacing={2} sx={{ mb: 3 }} alignItems="center">
-
-                {/* TOTAL VENDIDO */}
                 <Grid size={{ xs: 12, sm: 4 }}>
                     <Paper sx={{ p: 2 }}>
                         <Typography variant="body2" color="text.secondary">
@@ -43,99 +55,155 @@ export function Venda() {
                     </Paper>
                 </Grid>
 
-                {/* QUANTIDADE DE VENDAS */}
                 <Grid size={{ xs: 12, sm: 4 }}>
                     <Paper sx={{ p: 2 }}>
                         <Typography variant="body2" color="text.secondary">
                             Vendas realizadas
                         </Typography>
                         <Typography variant="h6">
-                            {vendas.dados.length}
+                            {vendas.totalRegistros}
                         </Typography>
                     </Paper>
                 </Grid>
 
-                {/* BOTÃO NOVA VENDA */}
                 <Grid
                     size={{ xs: 12, sm: 4 }}
-                    sx={{
-                        display: "flex",
-                        justifyContent: { xs: "stretch", sm: "flex-end" },
-                        alignItems: "center",
-                    }}
+                    sx={{ display: "flex", justifyContent: { xs: "stretch", sm: "flex-end" } }}
                 >
                     <Button
                         variant="contained"
                         startIcon={<AddShoppingCart />}
                         onClick={() => setOpenVenda(true)}
-                        fullWidth={false}
                     >
                         Nova Venda
                     </Button>
                 </Grid>
             </Grid>
 
-            {/* LISTA DE VENDAS */}
-            <Card sx={{ width: "100%" }}>
+            {/* FILTROS */}
+            <Card sx={{ mb: 3 }}>
                 <CardContent>
-                    <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        sx={{ mb: 2 }}
-                    >
-                        Histórico de Vendas
-                    </Typography>
+                    <Grid container spacing={2} component='form' onSubmit={handleBuscar} noValidate>
+                        <Grid size={{ xs: 12, sm: 4 }}>
+                            <Controller
+                                name="dataVenda"
+                                control={control}
+                                render={({ field }) => (
+                                    <DatePicker
+                                        label="Data da venda"
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        slotProps={{
+                                            textField: { fullWidth: true },
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
 
+                        <Grid size={{ xs: 12, sm: 4 }}>
+                            <Controller
+                                name="formaPagamento"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        select
+                                        fullWidth
+                                        label="Forma de Pagamento"
+                                        required
+                                    >
+                                        <MenuItem value="">Todas</MenuItem>
+
+                                        {FormaPagamentoService.dados.map(
+                                            (f) => (
+                                                <MenuItem
+                                                    key={f.id}
+                                                    value={f.id}
+                                                >
+                                                    {f.nome}
+                                                </MenuItem>
+                                            )
+                                        )}
+                                    </TextField>
+                                )}
+                            />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, sm: 4 }}>
+                            <Controller
+                                name="observacoes"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Observações"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <Button
+                                type="submit"
+                                variant="outlined"
+                                startIcon={<Search />}
+                            >
+                                Buscar
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            {/* LISTA */}
+            <Card>
+                <CardContent>
                     {isLoadingVenda ? (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                py: 4,
-                            }}
-                        >
+                        <Box display="flex" justifyContent="center" py={4}>
                             <CircularProgress />
                         </Box>
                     ) : vendas.dados.length === 0 ? (
                         <Box
-                            sx={{
-                                py: 6,
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                color: "text.secondary",
-                            }}
+                            py={6}
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="center"
+                            color="text.secondary"
                         >
                             <PointOfSale sx={{ fontSize: 48, mb: 1 }} />
-                            <Typography>
-                                Nenhuma venda registrada ainda
-                            </Typography>
-                            <Typography variant="body2">
-                                Clique em <strong>Nova Venda</strong> para começar
-                            </Typography>
+                            <Typography>Nenhuma venda encontrada</Typography>
                         </Box>
                     ) : (
-                        <Grid container spacing={2}>
-                            {vendas.dados.map(venda => (
-                                <Grid
-                                    key={venda.id}
-                                    size={{
-                                        xs: 12,
-                                        sm: 6,
-                                        md: 4,
-                                        lg: 3,
-                                        xl: 2,
-                                    }}
-                                >
-                                    <CardVenda venda={venda} onDelete={handleDelete}/>
-                                </Grid>
-                            ))}
-                        </Grid>
+                        <>
+                            <Grid container spacing={2}>
+                                {vendas.dados.map(venda => (
+                                    <Grid
+                                        key={venda.id}
+                                        size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                                    >
+                                        <CardVenda
+                                            venda={venda}
+                                            onDelete={handleDelete}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+
+                            <Box mt={4} display="flex" justifyContent="center">
+                                <Pagination
+                                    count={vendas.totalPaginas}
+                                    page={pagination.pagina}
+                                    onChange={handleChangePage}
+                                    color="primary"
+                                />
+                            </Box>
+                        </>
                     )}
                 </CardContent>
             </Card>
 
-            {/* MODAL DE VENDA */}
             <FormVenda
                 open={openVenda}
                 onClose={() => setOpenVenda(false)}
