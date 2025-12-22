@@ -21,6 +21,8 @@ export const defaultPaginationsData: IPagination = {
  * @returns string -> "?pagina=1&tamanhoPagina=10"
  */
 export function queryToString(filters: Record<string, any>): string {
+    if (!filters) return "";
+
     const params = Object.entries(filters)
         .filter(([_, value]) => value !== undefined && value !== null && value !== "") // remove null/undefined e strings vazias
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`) // encode p/ evitar erro com espaços
