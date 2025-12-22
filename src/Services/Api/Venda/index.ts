@@ -20,9 +20,9 @@ export interface IVendaPOST extends Omit<IVenda, "id"> { }
 export type IVendaGET = BaseApiResponse<IVenda>;
 
 export interface IFiltroVenda {
-    dataInicial?: string | null;
-    dataFinal?: string | null;
-    formaPagamento?: number;
+    dataVenda?: string | null;
+    formaPagamento?: string | null;
+    observacoes?: string | null;
 }
 
 export interface IListarVendasProps {
@@ -41,7 +41,7 @@ const listarVendas = async (
             ...queryParams?.filtros,
         };
 
-        const queryString = mergedObj ? queryToString(mergedObj) : "";
+        const queryString = queryToString(mergedObj);
 
         const { data } = await Api.get(ENTIDADE_API + queryString);
 
@@ -66,10 +66,6 @@ const excluirVenda = async (id: number): Promise<void | Error> => {
         return error;
     }
 };
-
-/* =========================
- *  EXPORT
- * ========================= */
 
 export const VendaService = {
     listarVendas,
