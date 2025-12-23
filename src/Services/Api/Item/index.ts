@@ -24,14 +24,6 @@ export interface IItemVendaPOST {
     quantidade: number;
 }
 
-export interface IVendaPOST {
-    itens: IItemVendaPOST[];
-    dataVenda: string;
-    valorTotal: number;
-    formaPagamento: number;
-    observacoes?: string;
-}
-
 const ENTIDADE_API = "Item";
 
 export type IItemGET = BaseApiResponse<IItem>
