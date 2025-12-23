@@ -68,7 +68,7 @@ export const DarkTheme = createTheme({
                 },
             },
         },
-        //O DataGrid não está na tipagem original do mui, por isso o @ts-expect-error
+        // A partir daqui não tem na tipagem original do mui
         //@ts-expect-error
         MuiDataGrid: {
             styleOverrides: {
@@ -92,6 +92,15 @@ export const DarkTheme = createTheme({
                     },
                     '&:hover': {
                         backgroundColor: '#333333',
+                    },
+                },
+            },
+        },
+        MuiDatePicker: {
+            defaultProps: {
+                slotProps: {
+                    actionBar: {
+                        actions: ["today", "clear"],
                     },
                 },
             },

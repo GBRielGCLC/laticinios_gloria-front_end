@@ -7,7 +7,9 @@ import { Home } from './Pages';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { ptBR } from "@mui/x-date-pickers/locales"; 
 import "dayjs/locale/pt-br";
+
 import { MenuBar } from './Components/MenuBar';
 
 export default function App() {
@@ -16,6 +18,7 @@ export default function App() {
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
       adapterLocale='pt-br'
+      localeText={ptBR.components.MuiLocalizationProvider.defaultProps.localeText}
     >
       <AppThemeProvider>
         <ConfirmDialogProvider>
