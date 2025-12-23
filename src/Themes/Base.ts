@@ -1,6 +1,11 @@
-import { createTheme } from "@mui/material";
+// BaseTheme.ts
+import { ThemeOptions } from '@mui/material';
 
-export const BaseTheme = createTheme({
+export const getBaseTheme = (mode: 'light' | 'dark'): ThemeOptions => ({
+    palette: {
+        mode,
+    },
+
     typography: {
         fontFamily: 'system-ui, -apple-system, sans-serif',
         h1: { fontSize: '2rem', fontWeight: 500 },
@@ -8,15 +13,18 @@ export const BaseTheme = createTheme({
         h3: { fontSize: '1.25rem', fontWeight: 500 },
         h4: { fontSize: '1rem', fontWeight: 500 },
     },
-    shape: {
-        borderRadius: 10,
-    },
+
+    shape: { borderRadius: 10 },
+
     components: {
         MuiFormLabel: {
             styleOverrides: {
-                asterisk: { color: '#d32f2f' },
+                asterisk: {
+                    color: '#d32f2f',
+                },
             },
         },
+
         MuiButton: {
             styleOverrides: {
                 root: {
@@ -26,6 +34,7 @@ export const BaseTheme = createTheme({
                 },
             },
         },
+
         MuiCard: {
             styleOverrides: {
                 root: {
@@ -33,20 +42,17 @@ export const BaseTheme = createTheme({
                 },
             },
         },
+
         // A partir daqui não tem na tipagem original do mui
         //@ts-expect-error
         MuiDatePicker: {
             defaultProps: {
+                views: ['year', 'month', 'day'],
                 slotProps: {
                     actionBar: {
-                        actions: ["today", "clear"],
+                        actions: ['today', 'clear'],
                     },
                 },
-            },
-        },
-        MuiDataGrid: {
-            styleOverrides: {
-                borderRadius: 8,
             },
         },
     },

@@ -1,6 +1,8 @@
 import { createTheme } from '@mui/material';
+import { getBaseTheme } from './Base';
 
-export const DarkTheme = createTheme({
+export const DarkTheme = createTheme(getBaseTheme('dark'),{
+    mode: 'dark',
     palette: {
         mode: 'dark',
         primary: {
@@ -25,24 +27,7 @@ export const DarkTheme = createTheme({
         },
         divider: '#2f3330',
     },
-    typography: {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        h1: { fontSize: '2rem', fontWeight: 500 },
-        h2: { fontSize: '1.5rem', fontWeight: 500 },
-        h3: { fontSize: '1.25rem', fontWeight: 500 },
-        h4: { fontSize: '1rem', fontWeight: 500 },
-    },
-    shape: {
-        borderRadius: 10,
-    },
     components: {
-        MuiFormLabel: {
-            styleOverrides: {
-                asterisk: {
-                    color: '#d32f2f',
-                },
-            },
-        },
         MuiAppBar: {
             styleOverrides: {
                 root: {
@@ -51,25 +36,7 @@ export const DarkTheme = createTheme({
                 },
             },
         },
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    borderRadius: 10,
-                },
-            },
-        },
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: '#1b1e1b',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.6)',
-                },
-            },
-        },
         // A partir daqui não tem na tipagem original do mui
-        //@ts-expect-error
         MuiDataGrid: {
             styleOverrides: {
                 root: {
@@ -92,15 +59,6 @@ export const DarkTheme = createTheme({
                     },
                     '&:hover': {
                         backgroundColor: '#333333',
-                    },
-                },
-            },
-        },
-        MuiDatePicker: {
-            defaultProps: {
-                slotProps: {
-                    actionBar: {
-                        actions: ["today", "clear"],
                     },
                 },
             },

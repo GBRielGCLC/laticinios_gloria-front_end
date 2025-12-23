@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material';
+import { getBaseTheme } from './Base';
 
-export const LightTheme = createTheme({
+export const LightTheme = createTheme(getBaseTheme('light'), {
     palette: {
         primary: {
             main: '#2d4a34',
@@ -23,53 +24,7 @@ export const LightTheme = createTheme({
             secondary: '#5a6b5d',
         },
     },
-    typography: {
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        h1: {
-            fontSize: '2rem',
-            fontWeight: 500,
-        },
-        h2: {
-            fontSize: '1.5rem',
-            fontWeight: 500,
-        },
-        h3: {
-            fontSize: '1.25rem',
-            fontWeight: 500,
-        },
-        h4: {
-            fontSize: '1rem',
-            fontWeight: 500,
-        },
-    },
-    shape: {
-        borderRadius: 10,
-    },
     components: {
-        MuiFormLabel: {
-            styleOverrides: {
-                asterisk: {
-                    color: '#d32f2f',
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                    fontWeight: 500,
-                },
-            },
-        },
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
-                },
-            },
-        },
-        // A partir daqui não tem na tipagem original do mui
-        //@ts-expect-error
         MuiDataGrid: {
             styleOverrides: {
                 root: {
@@ -92,15 +47,6 @@ export const LightTheme = createTheme({
                     },
                     '&:hover': {
                         backgroundColor: '#eaeaea',
-                    },
-                },
-            },
-        },
-        MuiDatePicker: {
-            defaultProps: {
-                slotProps: {
-                    actionBar: {
-                        actions: ["today", "clear"],
                     },
                 },
             },
