@@ -3,8 +3,6 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Card,
-    CardContent,
     MenuItem,
     TextField,
     Button,
@@ -27,6 +25,7 @@ import { FormaPagamentoService } from '../../../Services/Utils/FormaPagamento';
 import { Formatters } from '../../../Services/Utils/Formatters';
 import { IItem } from '../../../Services/Api/Item';
 import { useFormVenda } from './useFormVenda';
+import { DatePicker } from '@mui/x-date-pickers';
 
 interface FormVendaProps {
     open: boolean;
@@ -40,6 +39,7 @@ export function FormVenda({ open, onClose }: FormVendaProps) {
         handleSubmit,
 
         controlFinal,
+        errorsFinal,
         handleSubmitFinal,
 
         itens,
@@ -409,6 +409,28 @@ export function FormVenda({ open, onClose }: FormVendaProps) {
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
+                                <Controller
+                                    name="dataVenda"
+                                    control={controlFinal}
+                                    render={({ field }) => (
+                                        <DatePicker
+                                            label="Data da venda"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            disableFuture
+                                            slotProps={{
+                                                textField: {
+                                                    fullWidth: true,
+                                                    error: !!errorsFinal.dataVenda,
+                                                    helperText: errorsFinal.dataVenda?.message
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12 }}>
                                 <Controller
                                     name="observacoes"
                                     control={controlFinal}

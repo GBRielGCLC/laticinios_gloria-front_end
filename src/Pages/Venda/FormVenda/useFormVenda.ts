@@ -1,48 +1,23 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { IItem, IItemVendaPOST, ItemService, IVendaPOST } from "../../../Services/Api/Item";
+import { IItem, IItemVendaPOST, ItemService, } from "../../../Services/Api/Item";
 import { yup } from "../../../Yup";
 import { toast } from "react-toastify";
+import { VendaService, IVendaPOST } from "../../../Services/Api/Venda";
 
-// Tipagem para auxiliar na lógica interna do formulário
-interface ItemFormData {
-    itemId: number;
-    quantidade: number;
-}
+import { createItemVendaSchema, ItemFormData, schemaFinal } from "./schemas";
 
 export function useFormVenda() {
     const [itens, setItens] = useState<IItem[]>([]);
     const [carrinho, setCarrinho] = useState<IItemVendaPOST[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // FORM PARA ADICIONAR ITEM
-    const schema: yup.ObjectSchema<ItemFormData> = yup.object({
-        itemId: yup
-            .number()
-            .required("Selecione um item"),
-
-        quantidade: yup
-            .number()
-            .required("Informe a quantidade")
-            .min(1, "Quantidade mínima é 1")
-            .test(
-                "estoque",
-                "Quantidade maior que o estoque",
-                function (value) {
-                    const parent = this.parent as ItemFormData;
-                    const selected = itens.find(i => i.id === parent.itemId);
-                    if (!selected || !value) return true;
-
-                    const qCarrinho = carrinho
-                        .filter(c => c.itemId === parent.itemId)
-                        .reduce((acc, c) => acc + c.quantidade, 0);
-
-                    return value + qCarrinho <= selected.lote.quantidade;
-                }
-            )
-    }).required();
+    const schema = useMemo(
+        () => createItemVendaSchema(itens, carrinho),
+        [itens, carrinho]
+    );
 
     const { control, watch, handleSubmit, reset, formState: { errors } } = useForm<ItemFormData>({
         resolver: yupResolver(schema),
@@ -55,9 +30,10 @@ export function useFormVenda() {
     const itemId = watch("itemId");
     const quantidade = watch("quantidade");
 
-    // FORM FINAL (PGTO + OBS)
-    const { control: controlFinal, handleSubmit: handleSubmitFinal } = useForm({
+    const { control: controlFinal, handleSubmit: handleSubmitFinal, reset: resetFinal, formState: { errors: errorsFinal } } = useForm({
+        resolver: yupResolver(schemaFinal),
         defaultValues: {
+            dataVenda: null,
             formaPagamento: 1,
             observacoes: "",
         }
@@ -165,16 +141,37 @@ export function useFormVenda() {
     }, []);
 
 
-    const registrarVenda = async (dadosExtras: { formaPagamento: number; observacoes?: string }) => {
+    const registrarVenda = async (dadosExtras: {
+        dataVenda: Dayjs | null;
+        formaPagamento: number;
+        observacoes?: string
+    }) => {
+        if (!dadosExtras.dataVenda) {
+            toast.warning("Informe a data da venda");
+            return;
+        }
+
         const payload: IVendaPOST = {
             itens: carrinho,
-            dataVenda: dayjs().toISOString(),
             valorTotal,
             formaPagamento: dadosExtras.formaPagamento,
-            observacoes: dadosExtras.observacoes
+            observacoes: dadosExtras.observacoes,
+            dataVenda: dadosExtras.dataVenda.format('YYYY-MM-DDTHH:mm:ss.SSS')
         };
 
-        console.log("🚀 Venda enviada:", payload);
+        console.log(payload);
+
+        /* VendaService.cadastrarVenda(payload).then((result) => {
+            if (result instanceof Error) {
+                toast.error(result.message);
+                return;
+            }
+
+            toast.success("Venda cadastrada com sucesso!");
+            reset();
+            resetFinal();
+            setCarrinho([]);
+        }); */
     };
 
     return {
@@ -183,6 +180,7 @@ export function useFormVenda() {
         handleSubmit: handleSubmit(adicionarAoCarrinho),
 
         controlFinal,
+        errorsFinal,
         handleSubmitFinal: handleSubmitFinal(registrarVenda),
 
         itens,
