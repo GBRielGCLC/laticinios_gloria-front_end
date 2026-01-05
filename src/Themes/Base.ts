@@ -1,4 +1,3 @@
-// BaseTheme.ts
 import { ThemeOptions } from '@mui/material';
 
 export const getBaseTheme = (mode: 'light' | 'dark'): ThemeOptions => ({
