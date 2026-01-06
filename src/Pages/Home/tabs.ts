@@ -3,6 +3,7 @@ import { Lote } from "../Lote";
 import { Item } from "../Item";
 import { Venda } from "../Venda";
 import type { ComponentType } from "react";
+import { Usuario } from "../Usuario";
 
 interface HomeTab {
     value: string;
@@ -36,4 +37,9 @@ export const tabs: HomeTab[] = [
         label: "Venda",
         component: Venda,
     },
+    {
+        value: "usuarios",
+        label: "Usuários",
+        component: Usuario,
+    }
 ];
