@@ -147,7 +147,9 @@ export const useLote = () => {
 
     const handleCloseForm = () => {
         setIsFormOpen(false);
-        setEditingProduct(null);
+
+        // GARANTIR QUE O MODAL FECHE ANTES DE RESETAR OS DADOS
+        setTimeout(() => setEditingProduct(null), 500);
     };
 
     interface HandleDeleteLoteProps {

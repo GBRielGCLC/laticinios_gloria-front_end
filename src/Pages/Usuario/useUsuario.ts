@@ -146,7 +146,9 @@ export const useUsuario = () => {
 
     const handleCloseForm = () => {
         setIsFormOpen(false);
-        setEditingUser(null);
+
+        // GARANTIR QUE O MODAL FECHE ANTES DE RESETAR OS DADOS
+        setTimeout(() => setEditingUser(null), 500);
     };
 
     /* =======================

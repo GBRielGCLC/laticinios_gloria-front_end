@@ -172,10 +172,11 @@ export const useItem = () => {
         listAllItens({ pagination: modelPagination, filtros });
     };
 
-
     const handleCloseForm = () => {
         setIsFormOpen(false);
-        setEditingItem(null);
+
+        // GARANTIR QUE O MODAL FECHE ANTES DE RESETAR OS DADOS
+        setTimeout(() => setEditingItem(null), 500);
     };
 
     const handleFiltrar = (filter: IFiltroItem) => {
