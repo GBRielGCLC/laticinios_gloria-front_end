@@ -47,13 +47,10 @@ export function useFormItem({
     useEffect(() => {
         if (open) {
             if (editingItem) {
-                const unidadeMedidaId = UnidadeMedidaService.findIdByNome(editingItem.unidadeMedida);
-
                 reset({
-                    produtoId: editingItem.produtoId,
-                    loteId: editingItem.loteId,
-                    unidadeMedida: unidadeMedidaId,
-                });
+                    ...editingItem,
+                    unidadeMedida: UnidadeMedidaService.findIdByNome(editingItem.unidadeMedida),
+                }, { keepDefaultValues: true });
             } else {
                 reset();
             }

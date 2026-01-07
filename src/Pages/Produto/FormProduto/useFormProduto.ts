@@ -8,15 +8,15 @@ import { toast } from "react-toastify";
 const validationSchema = yup.object({
     nome: yup.string().required(),
     precoUnitario: yup.number().required().transform((value, originalValue) => {
-            if (typeof originalValue === "string") {
-                const semMascara = originalValue
-                    .replace(/[R$\s.]/g, "")
-                    .replace(",", ".");
+        if (typeof originalValue === "string") {
+            const semMascara = originalValue
+                .replace(/[R$\s.]/g, "")
+                .replace(",", ".");
 
-                return Number(semMascara);
-            }
-            return value;
-        }),
+            return Number(semMascara);
+        }
+        return value;
+    }),
     descricao: yup.string().required(),
 });
 
@@ -54,11 +54,7 @@ export function useFormProduto({
     useEffect(() => {
         if (open) {
             if (editingProduct) {
-                reset({
-                    nome: editingProduct.nome,
-                    precoUnitario: editingProduct.precoUnitario,
-                    descricao: editingProduct.descricao,
-                });
+                reset({ ...editingProduct }, { keepDefaultValues: true });
             } else {
                 reset();
             }

@@ -78,14 +78,10 @@ export function useFormUsuario({
         if (open) {
             if (editingUser) {
                 reset({
-                    nome: editingUser.nome,
-                    email: editingUser.email,
-                    senha: "",
-                    ativo: editingUser.ativo,
+                    ...editingUser,
                     funcao:
                         FuncaoUsuarioService.findIdByNome(editingUser.funcao.toString()) ?? "",
-                });
-
+                }, { keepDefaultValues: true });
             } else {
                 reset();
             }

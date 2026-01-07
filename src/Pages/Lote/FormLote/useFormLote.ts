@@ -11,15 +11,15 @@ const validationSchema = yup.object().shape({
     numeroLote: yup.string().required(),
     quantidade: yup.number().min(1, "A quantidade deve ser maior que zero").required(),
     valorLoteCompra: yup.number().required().transform((value, originalValue) => {
-            if (typeof originalValue === "string") {
-                const semMascara = originalValue
-                    .replace(/[R$\s.]/g, "")
-                    .replace(",", ".");
+        if (typeof originalValue === "string") {
+            const semMascara = originalValue
+                .replace(/[R$\s.]/g, "")
+                .replace(",", ".");
 
-                return Number(semMascara);
-            }
-            return value;
-        }),
+            return Number(semMascara);
+        }
+        return value;
+    }),
 
     dataCompra: yup.mixed<Dayjs>()
         .required()
@@ -74,12 +74,10 @@ export function useFormLote({
         if (open) {
             if (editingProduct) {
                 reset({
-                    numeroLote: editingProduct.numeroLote,
-                    quantidade: editingProduct.quantidade,
-                    valorLoteCompra: editingProduct.valorLoteCompra,
+                    ...editingProduct,
                     dataCompra: dayjs(editingProduct.dataCompra),
                     dataValidade: dayjs(editingProduct.dataValidade),
-                });
+                }, { keepDefaultValues: true });
             } else {
                 reset();
             }
