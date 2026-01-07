@@ -65,7 +65,7 @@ export const Produto = () => {
 
             <FiltroProduto
                 open={openFiltro}
-                onClose={() => setOpenFiltro(false)}
+                onClose={handleCloseForm}
                 onFiltrar={handleFiltrar}
             />
         </Box>
