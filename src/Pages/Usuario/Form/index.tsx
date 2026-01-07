@@ -80,7 +80,11 @@ export function FormUsuario(props: FormUsuarioProps) {
                         </Grid>
                     </Grid>
 
-                    {!isEditing && (<TextField select {...register("funcao")}>
+                    {!isEditing && (<TextField label="Função" fullWidth select {...register("funcao")}>
+                        <MenuItem value={''}>
+                            <em>Selecione</em>
+                        </MenuItem>
+
                         {FuncaoUsuarioService.dados.map(funcao => (
                             <MenuItem key={funcao.id} value={funcao.id}>
                                 {funcao.nome}
